@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import CreateDelivery from "./pages/CreateDelivery";
 import DashboardLayout from "./components/DashboardLayout";
 import { NAV, homePath } from "./config/navigation";
 import { getUser } from "./api/auth";
@@ -35,7 +36,7 @@ export default function App() {
         <Route key={role} path={cfg.base} element={<DashboardLayout role={role} />}>
           <Route index element={<Navigate to={cfg.items[0][1]} replace />} />
           {cfg.items.map(([, path]) => (
-            <Route key={path} path={path} element={<Placeholder />} />
+            <Route key={path} path={path} element={role === "CUSTOMER" && path === "create-delivery" ? <CreateDelivery /> : <Placeholder />} />
           ))}
         </Route>
       ))}
