@@ -1,5 +1,15 @@
 # React + Vite
 
+## Delivery request tests
+
+Run `npm test` for a single run, or `npm run test:watch` while editing.
+The tests use Vitest, React Testing Library, user-event, and jsdom to exercise
+the delivery form's validation, keyboard review flow, retained edits, and
+unavailable fee/submission states. No backend is required.
+
+Run `npm run lint` and `npm run build` for the other project checks.
+These DOM tests do not replace browser checks for responsive layout.
+
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
 Currently, two official plugins are available:
