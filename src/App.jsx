@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import CreateDelivery from "./pages/CreateDelivery";
+import GetQuote from "./pages/GetQuote";
 import DashboardLayout from "./components/DashboardLayout";
 import { NAV, homePath } from "./config/navigation";
 import { getUser } from "./api/auth";
@@ -28,6 +29,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Start />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/get-a-quote" element={<GetQuote />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />

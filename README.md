@@ -1,11 +1,36 @@
 # React + Vite
 
-## Delivery request tests
+## Public delivery quotes
+
+Open `/get-a-quote` without signing in, or follow **Get a Quote** from login.
+The screen collects pickup city, drop-off city, and packed parcel weight in kg.
+It validates nonblank city names containing letters and finite, positive weight,
+including decimal weights. Errors are associated with their fields and submitting
+invalid details focuses the first error.
+
+Fee estimates are explicitly unavailable. Valid submissions announce that no fee
+was calculated or delivery placed; they make no network requests. Visitors can
+follow **Log in to place a delivery** to the existing login screen. The customer
+delivery form still supports local review only; submission remains unavailable.
+
+Integration requires an agreed **public** quote endpoint, city/service-area
+resolution, parcel limits, request/response and error schemas, and fee currency.
+Then replace the unavailable state with real request/loading/error handling and
+server-provided estimates, clearing estimates on edits and ignoring stale
+responses. The authenticated quote proposal in
+`docs/customer-delivery-request-api-contract-draft.md` is not a public API contract.
+Authentication and customer delivery submission require their existing separate
+integration work.
+
+## Frontend tests
 
 Run `npm test` for a single run, or `npm run test:watch` while editing.
 The tests use Vitest, React Testing Library, user-event, and jsdom to exercise
 the delivery form's validation, keyboard review flow, retained edits, and
-unavailable fee/submission states. No backend is required.
+unavailable fee/submission states. Public quote tests cover validation, keyboard
+submission, unavailable messaging without a network call, editing, and login
+navigation. Route regressions cover public access, customer protection, and each
+role's dashboard redirect. No backend is required.
 
 Run `npm run lint` and `npm run build` for the other project checks.
 These DOM tests do not replace browser checks for responsive layout.
