@@ -13,7 +13,7 @@ submission explicitly remain unavailable. The Vitest suite covers
 validation, keyboard review, retained edits, and these unavailable states.
 This draft does not authorize changing that implementation or its tests.
 
-The supplied team report specifies Java 17/Spring Boot, PostgreSQL, zone/weight
+The supplied team report specifies Java 21/Spring Boot, PostgreSQL, zone/weight
 pricing strategies, and creation of a parcel with a unique tracking number and
 initial `CREATED` status after confirmation. A transactional outbox is proposed
 in that report; authentication, pricing/zones, and events have separate owners.
