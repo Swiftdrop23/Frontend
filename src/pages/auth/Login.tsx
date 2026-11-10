@@ -1,22 +1,30 @@
 import { useState } from "react";
+import type { FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import AuthLayout from "../components/AuthLayout";
-import Field from "../components/Field";
-import { login, saveSession } from "../api/auth";
-import { homePath } from "../config/navigation";
-import { isEmail } from "../utils/validate";
+import AuthLayout from "../../components/AuthLayout";
+import Field from "../../components/Field";
+import type { FieldChange } from "../../components/Field";
+import { login, saveSession } from "../../api/auth";
+import { homePath } from "../../config/navigation";
+import { isEmail } from "../../utils/validate";
+import { errMessage } from "../../utils/errors";
+
+interface Fields {
+  email: string;
+  password: string;
+}
 
 export default function Login() {
   const nav = useNavigate();
-  const [f, setF] = useState({ email: "", password: "" });
-  const [errors, setErrors] = useState({});
+  const [f, setF] = useState<Fields>({ email: "", password: "" });
+  const [errors, setErrors] = useState<Partial<Fields>>({});
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
-  const set = (e) => setF({ ...f, [e.target.name]: e.target.value });
+  const set = (e: FieldChange) => setF({ ...f, [e.target.name]: e.target.value });
 
-  async function submit(e) {
+  async function submit(e: FormEvent) {
     e.preventDefault();
-    const er = {};
+    const er: Partial<Fields> = {};
     if (!isEmail(f.email)) er.email = "Enter a valid email address.";
     if (!f.password) er.password = "Enter your password.";
     setErrors(er);
@@ -28,7 +36,7 @@ export default function Login() {
       saveSession(session);
       nav(homePath(session.user.role), { replace: true });
     } catch (err) {
-      setMsg(err.message);
+      setMsg(errMessage(err));
     } finally {
       setBusy(false);
     }

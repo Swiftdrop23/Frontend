@@ -1,8 +1,11 @@
 import { NavLink, Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { NAV } from "../config/navigation";
 import { clearSession, getUser } from "../api/auth";
+import type { Role } from "../types";
 
-export default function DashboardLayout({ role }) {
+const EXTRA_TITLES: Record<string, string> = { "profile/change-password": "Change Password" };
+
+export default function DashboardLayout({ role }: { role: Role }) {
   const user = getUser();
   const nav = useNavigate();
   const { pathname } = useLocation();
@@ -11,6 +14,8 @@ export default function DashboardLayout({ role }) {
   if (!user || user.role !== role) return <Navigate to="/login" replace />;
 
   const current = cfg.items.find(([, p]) => pathname.startsWith(`${cfg.base}/${p}`));
+  const extra = Object.entries(EXTRA_TITLES).find(([p]) => pathname.endsWith("/" + p));
+  const title = extra ? extra[1] : current ? current[0] : "Dashboard";
   const logout = () => {
     clearSession();
     nav("/login", { replace: true });
@@ -30,7 +35,7 @@ export default function DashboardLayout({ role }) {
       </aside>
       <div className="dash-main">
         <header className="topbar">
-          <h1>{current ? current[0] : "Dashboard"}</h1>
+          <h1>{title}</h1>
           <div className="topbar-user">
             <span className="avatar">{user.name.charAt(0).toUpperCase()}</span>
             <span>{user.name}</span>

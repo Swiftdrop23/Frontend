@@ -1,12 +1,24 @@
 import { useState } from "react";
+import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
-import AuthLayout from "../components/AuthLayout";
-import Field from "../components/Field";
-import { registerCustomer, registerMerchant } from "../api/auth";
-import { isEmail, isPhone, isStrong } from "../utils/validate";
+import AuthLayout from "../../components/AuthLayout";
+import Field from "../../components/Field";
+import type { FieldChange } from "../../components/Field";
+import { registerCustomer, registerMerchant } from "../../api/auth";
+import { isEmail, isPhone, isStrong } from "../../utils/validate";
+import { errMessage } from "../../utils/errors";
+import type { OkResponse } from "../../types";
 
-// fields: [name, label, type, placeholder]
-const FORMS = {
+type AccountType = "CUSTOMER" | "MERCHANT";
+
+interface FormConfig {
+  submit: (data: Record<string, string>) => Promise<OkResponse>;
+  button: string;
+  // fields: [name, label, type, placeholder]
+  fields: [name: string, label: string, type: string, placeholder: string][];
+}
+
+const FORMS: Record<AccountType, FormConfig> = {
   CUSTOMER: {
     submit: registerCustomer,
     button: "Create account",
@@ -31,25 +43,26 @@ const FORMS = {
 };
 
 export default function Register() {
-  const [role, setRole] = useState("");
-  const [v, setV] = useState({});
-  const [errors, setErrors] = useState({});
+  const [role, setRole] = useState<AccountType | "">("");
+  const [v, setV] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [msg, setMsg] = useState("");
   const [done, setDone] = useState(false);
   const [busy, setBusy] = useState(false);
-  const cfg = FORMS[role];
-  const set = (e) => setV({ ...v, [e.target.name]: e.target.value });
+  const cfg = role ? FORMS[role] : undefined;
+  const set = (e: FieldChange) => setV({ ...v, [e.target.name]: e.target.value });
 
-  function pickRole(e) {
-    setRole(e.target.value);
+  function pickRole(e: FieldChange) {
+    setRole(e.target.value as AccountType | "");
     setV({});
     setErrors({});
     setMsg("");
   }
 
-  async function submit(e) {
+  async function submit(e: FormEvent) {
     e.preventDefault();
-    const er = {};
+    if (!cfg) return;
+    const er: Record<string, string> = {};
     cfg.fields.forEach(([name, label]) => {
       if (!(v[name] || "").trim()) er[name] = `${label} is required.`;
     });
@@ -60,13 +73,13 @@ export default function Register() {
     setErrors(er);
     setMsg("");
     if (Object.keys(er).length) return;
-    const { confirm, ...payload } = v;
+    const { confirm: _confirm, ...payload } = v;
     setBusy(true);
     try {
       await cfg.submit(payload);
       setDone(true);
     } catch (err) {
-      setMsg(err.message);
+      setMsg(errMessage(err));
     } finally {
       setBusy(false);
     }
