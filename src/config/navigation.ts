@@ -1,7 +1,15 @@
-// [label, path] per role. Courier and Dispatcher menus are not in the Member designs yet.
-const common = [["Notifications", "notifications"], ["Profile", "profile"]];
+import type { Role } from "../types";
 
-export const NAV = {
+export type NavItem = [label: string, path: string];
+
+export interface NavConfig {
+  base: string;
+  items: NavItem[];
+}
+
+const common: NavItem[] = [["Notifications", "notifications"], ["Profile", "profile"]];
+
+export const NAV: Record<Role, NavConfig> = {
   CUSTOMER: { base: "/customer", items: [["Create Delivery", "create-delivery"], ["Live Tracking", "live-tracking"], ["Delivery History", "delivery-history"], ...common] },
   MERCHANT: { base: "/merchant", items: [["Orders", "orders"], ["API Keys", "api-keys"], ["Webhooks", "webhooks"], ...common] },
   COURIER: { base: "/courier", items: [["My Deliveries", "deliveries"], ...common] },
@@ -12,7 +20,7 @@ export const NAV = {
   },
 };
 
-export function homePath(role) {
-  const c = NAV[role];
+export function homePath(role: string): string {
+  const c = (NAV as Record<string, NavConfig | undefined>)[role];
   return c ? `${c.base}/${c.items[0][1]}` : "/login";
 }

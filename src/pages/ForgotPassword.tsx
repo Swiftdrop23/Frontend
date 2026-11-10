@@ -1,17 +1,24 @@
 import { useState } from "react";
+import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
 import Field from "../components/Field";
 import { forgotPassword } from "../api/auth";
 import { isEmail } from "../utils/validate";
+import { errMessage } from "../utils/errors";
+
+interface Message {
+  type: "" | "ok" | "error";
+  text: string;
+}
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
-  const [msg, setMsg] = useState({ type: "", text: "" });
+  const [msg, setMsg] = useState<Message>({ type: "", text: "" });
   const [busy, setBusy] = useState(false);
 
-  async function submit(e) {
+  async function submit(e: FormEvent) {
     e.preventDefault();
     setMsg({ type: "", text: "" });
     if (!isEmail(email)) return setError("Enter a valid email address.");
@@ -21,7 +28,7 @@ export default function ForgotPassword() {
       await forgotPassword(email.trim());
       setMsg({ type: "ok", text: "If an account exists for this email, a reset link is on its way." });
     } catch (err) {
-      setMsg({ type: "error", text: err.message });
+      setMsg({ type: "error", text: errMessage(err) });
     } finally {
       setBusy(false);
     }

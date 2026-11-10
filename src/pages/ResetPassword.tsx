@@ -1,23 +1,31 @@
 import { useState } from "react";
+import type { FormEvent } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
 import Field from "../components/Field";
+import type { FieldChange } from "../components/Field";
 import { resetPassword } from "../api/auth";
 import { isStrong } from "../utils/validate";
+import { errMessage } from "../utils/errors";
+
+interface Fields {
+  password: string;
+  confirm: string;
+}
 
 export default function ResetPassword() {
   const [params] = useSearchParams();
   const token = params.get("token") || "";
   const nav = useNavigate();
-  const [f, setF] = useState({ password: "", confirm: "" });
-  const [errors, setErrors] = useState({});
+  const [f, setF] = useState<Fields>({ password: "", confirm: "" });
+  const [errors, setErrors] = useState<Partial<Fields>>({});
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
-  const set = (e) => setF({ ...f, [e.target.name]: e.target.value });
+  const set = (e: FieldChange) => setF({ ...f, [e.target.name]: e.target.value });
 
-  async function submit(e) {
+  async function submit(e: FormEvent) {
     e.preventDefault();
-    const er = {};
+    const er: Partial<Fields> = {};
     if (!isStrong(f.password)) er.password = "Use at least 8 characters with letters and numbers.";
     if (f.confirm !== f.password) er.confirm = "Passwords do not match.";
     setErrors(er);
@@ -28,7 +36,7 @@ export default function ResetPassword() {
       await resetPassword(token, f.password);
       nav("/login");
     } catch (err) {
-      setMsg(err.message);
+      setMsg(errMessage(err));
     } finally {
       setBusy(false);
     }

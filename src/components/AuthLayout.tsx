@@ -1,6 +1,13 @@
+import type { ReactNode } from "react";
 import BrandArt from "./BrandArt";
 
-export default function AuthLayout({ title, subtitle, children }) {
+interface AuthLayoutProps {
+  title: string;
+  subtitle?: string;
+  children?: ReactNode;
+}
+
+export default function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
   return (
     <div className="auth">
       <section className="auth-brand">
