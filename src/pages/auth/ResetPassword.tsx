@@ -1,12 +1,12 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import AuthLayout from "../components/AuthLayout";
-import Field from "../components/Field";
-import type { FieldChange } from "../components/Field";
-import { resetPassword } from "../api/auth";
-import { isStrong } from "../utils/validate";
-import { errMessage } from "../utils/errors";
+import AuthLayout from "../../components/AuthLayout";
+import Field from "../../components/Field";
+import type { FieldChange } from "../../components/Field";
+import { resetPassword } from "../../api/auth";
+import { isStrong } from "../../utils/validate";
+import { errMessage } from "../../utils/errors";
 
 interface Fields {
   password: string;

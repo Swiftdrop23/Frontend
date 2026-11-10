@@ -1,13 +1,13 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
-import AuthLayout from "../components/AuthLayout";
-import Field from "../components/Field";
-import type { FieldChange } from "../components/Field";
-import { registerCustomer, registerMerchant } from "../api/auth";
-import { isEmail, isPhone, isStrong } from "../utils/validate";
-import { errMessage } from "../utils/errors";
-import type { OkResponse } from "../types";
+import AuthLayout from "../../components/AuthLayout";
+import Field from "../../components/Field";
+import type { FieldChange } from "../../components/Field";
+import { registerCustomer, registerMerchant } from "../../api/auth";
+import { isEmail, isPhone, isStrong } from "../../utils/validate";
+import { errMessage } from "../../utils/errors";
+import type { OkResponse } from "../../types";
 
 type AccountType = "CUSTOMER" | "MERCHANT";
 

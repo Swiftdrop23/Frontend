@@ -1,13 +1,13 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import AuthLayout from "../components/AuthLayout";
-import Field from "../components/Field";
-import type { FieldChange } from "../components/Field";
-import { login, saveSession } from "../api/auth";
-import { homePath } from "../config/navigation";
-import { isEmail } from "../utils/validate";
-import { errMessage } from "../utils/errors";
+import AuthLayout from "../../components/AuthLayout";
+import Field from "../../components/Field";
+import type { FieldChange } from "../../components/Field";
+import { login, saveSession } from "../../api/auth";
+import { homePath } from "../../config/navigation";
+import { isEmail } from "../../utils/validate";
+import { errMessage } from "../../utils/errors";
 
 interface Fields {
   email: string;

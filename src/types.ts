@@ -30,3 +30,24 @@ export interface Notice {
 export interface OkResponse {
   ok: boolean;
 }
+
+export type ParcelStatus =
+  | "PENDING"
+  | "PICKED_UP"
+  | "IN_TRANSIT"
+  | "OUT_FOR_DELIVERY"
+  | "DELIVERED"
+  | "CANCELLED";
+
+// Mirrors the Parcel entity in the Spring Boot backend (swiftdrop.backend.parcel.Parcel).
+export interface Parcel {
+  id: number;
+  trackingNumber: string;
+  senderName: string;
+  receiverName: string;
+  receiverAddress: string;
+  status: ParcelStatus;
+  createdAt: string;
+}
+
+export type NewParcel = Pick<Parcel, "senderName" | "receiverName" | "receiverAddress">;

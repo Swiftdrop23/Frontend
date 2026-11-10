@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
-import Field from "../components/Field";
-import type { FieldChange } from "../components/Field";
-import { getProfile, updateProfile, listAddresses, saveAddress, deleteAddress } from "../api/users";
-import { isPhone } from "../utils/validate";
-import { errMessage } from "../utils/errors";
-import type { Address, Notice, Profile as ProfileData, Role } from "../types";
-import "../profile.css";
+import Field from "../../components/Field";
+import type { FieldChange } from "../../components/Field";
+import { getProfile, updateProfile, listAddresses, saveAddress, deleteAddress } from "../../api/users";
+import { isPhone } from "../../utils/validate";
+import { errMessage } from "../../utils/errors";
+import type { Address, Notice, Profile as ProfileData, Role } from "../../types";
+import "../../profile.css";
 
 function PersonalDetails() {
   const [f, setF] = useState<ProfileData>({ fullName: "", email: "", phone: "" });

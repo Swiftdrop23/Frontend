@@ -1,13 +1,13 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
-import Field from "../components/Field";
-import type { FieldChange } from "../components/Field";
-import { changePassword } from "../api/users";
-import { isStrong } from "../utils/validate";
-import { errMessage } from "../utils/errors";
-import type { Notice } from "../types";
-import "../profile.css";
+import Field from "../../components/Field";
+import type { FieldChange } from "../../components/Field";
+import { changePassword } from "../../api/users";
+import { isStrong } from "../../utils/validate";
+import { errMessage } from "../../utils/errors";
+import type { Notice } from "../../types";
+import "../../profile.css";
 
 interface Fields {
   current: string;

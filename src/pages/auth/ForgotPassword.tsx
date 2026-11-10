@@ -1,11 +1,11 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
-import AuthLayout from "../components/AuthLayout";
-import Field from "../components/Field";
-import { forgotPassword } from "../api/auth";
-import { isEmail } from "../utils/validate";
-import { errMessage } from "../utils/errors";
+import AuthLayout from "../../components/AuthLayout";
+import Field from "../../components/Field";
+import { forgotPassword } from "../../api/auth";
+import { isEmail } from "../../utils/validate";
+import { errMessage } from "../../utils/errors";
 
 interface Message {
   type: "" | "ok" | "error";
