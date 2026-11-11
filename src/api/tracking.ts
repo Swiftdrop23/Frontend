@@ -99,6 +99,38 @@ export function liveTrackingUrl(trackingNumber: string): string | null {
   return `${base}/v1/tracking/live/${encodeURIComponent(normalise(trackingNumber))}`;
 }
 
+/**
+ * Downloads the receipt PDF and saves it as SwiftDrop-receipt-<tracking>.pdf.
+ * Returns false in mock mode (no backend), so the page can fall back to the print dialog.
+ */
+export async function downloadReceiptPdf(trackingNumber: string): Promise<boolean> {
+  const base = import.meta.env.VITE_API_URL;
+  if (!base) return false;
+  const tracking = normalise(trackingNumber);
+  const token = localStorage.getItem("token");
+  let res: Response;
+  try {
+    res = await fetch(`${base}/v1/tracking/parcels/${encodeURIComponent(tracking)}/receipt.pdf`, {
+      headers: { Accept: "application/pdf", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    });
+  } catch {
+    throw new Error("Cannot reach the server. Check your connection and try again.");
+  }
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.message || "The receipt could not be downloaded. Please try again.");
+  }
+  const url = URL.createObjectURL(await res.blob());
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `SwiftDrop-receipt-${tracking}.pdf`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
+  return true;
+}
+
 /** Delivery details, receipt and Live Tracking pages. Only the parcel's owner gets a result. */
 export async function getParcelDetails(trackingNumber: string): Promise<ParcelDetails> {
   if (!isMock) return request<ParcelDetails>("GET", `/v1/tracking/parcels/${encodeURIComponent(normalise(trackingNumber))}`);
