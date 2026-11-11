@@ -8,6 +8,7 @@ const LABELS: Record<ParcelStatus, string> = {
   IN_TRANSIT: "In transit",
   OUT_FOR_DELIVERY: "Out for delivery",
   DELIVERED: "Delivered",
+  FAILED: "Failed",
   CANCELLED: "Cancelled",
 };
 
