@@ -32,6 +32,7 @@ export interface OkResponse {
 }
 
 export type ParcelStatus =
+  | "CREATED"
   | "PENDING"
   | "PICKED_UP"
   | "IN_TRANSIT"

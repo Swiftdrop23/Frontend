@@ -10,7 +10,7 @@ export interface NavConfig {
 const common: NavItem[] = [["Notifications", "notifications"], ["Profile", "profile"]];
 
 export const NAV: Record<Role, NavConfig> = {
-  CUSTOMER: { base: "/customer", items: [["Create Delivery", "create-delivery"], ["Live Tracking", "live-tracking"], ["Delivery History", "delivery-history"], ...common] },
+  CUSTOMER: { base: "/customer", items: [["Create Delivery", "create-delivery"], ["Live Tracking", "live-tracking"], ["Delivery History", "delivery-history"], ["Cancel Delivery", "cancel-delivery"], ...common] },
   MERCHANT: { base: "/merchant", items: [["Orders", "orders"], ["API Keys", "api-keys"], ["Webhooks", "webhooks"], ...common] },
   COURIER: { base: "/courier", items: [["My Deliveries", "deliveries"], ...common] },
   DISPATCHER: { base: "/dispatcher", items: [["Unassigned Parcels", "unassigned-parcels"], ["Courier Workloads", "courier-workloads"], ...common] },

@@ -6,12 +6,11 @@ import type { NewParcel, Parcel } from "../types";
 //   - otherwise               -> return mock data, so the UI works before the backend is ready
 // With VITE_API_URL=http://localhost:8080/api these paths hit /api/parcels on the Spring Boot backend.
 
-let parcels: Parcel[] = [
+const parcels: Parcel[] = [
   { id: 1, trackingNumber: "SD-1A2B3C4D", senderName: "Kamal", receiverName: "Nimal", receiverAddress: "No 12, Galle Road, Colombo", status: "IN_TRANSIT", createdAt: "2026-11-08T10:15:00" },
   { id: 2, trackingNumber: "SD-5E6F7A8B", senderName: "Kamal", receiverName: "Sunil", receiverAddress: "No 45, Peradeniya Road, Kandy", status: "PENDING", createdAt: "2026-11-09T09:30:00" },
   { id: 3, trackingNumber: "SD-9C0D1E2F", senderName: "Amali", receiverName: "Dilani", receiverAddress: "No 7, Main Street, Galle", status: "DELIVERED", createdAt: "2026-11-05T14:00:00" },
 ];
-let nextId = 4;
 
 export async function listParcels(): Promise<Parcel[]> {
   if (!isMock) return request<Parcel[]>("GET", "/parcels");
@@ -19,18 +18,12 @@ export async function listParcels(): Promise<Parcel[]> {
   return parcels.map((p) => ({ ...p }));
 }
 
+/** @deprecated Legacy module only. Member 2 customers use quote confirmation. */
 export async function createParcel(data: NewParcel): Promise<Parcel> {
-  if (!isMock) return request<Parcel>("POST", "/parcels", data);
-  await wait(400);
-  const created: Parcel = {
-    id: nextId++,
-    trackingNumber: "SD-" + Math.random().toString(16).slice(2, 10).toUpperCase(),
-    status: "PENDING",
-    createdAt: new Date().toISOString(),
-    ...data,
-  };
-  parcels = [created, ...parcels];
-  return { ...created };
+  if (isMock) throw new Error("Use delivery quote confirmation to create a parcel.");
+  // The backend permits this only while Member 2 persistence is disabled.
+  // A configured server decides readiness; never fabricate saved parcels here.
+  return request<Parcel>("POST", "/parcels", data);
 }
 
 export async function trackParcel(trackingNumber: string): Promise<Parcel> {

@@ -8,6 +8,7 @@ import Placeholder from "./components/Placeholder";
 import { NAV, homePath } from "./config/navigation";
 import type { NavConfig } from "./config/navigation";
 import { ROUTES } from "./routes";
+import { publicRoutes } from "./routes/publicRoutes";
 import { getUser } from "./api/auth";
 import type { Role } from "./types";
 
@@ -22,6 +23,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Start />} />
       <Route path="/login" element={<Login />} />
+      {publicRoutes.map((route) => <Route key={route.path} path={route.path} element={route.element} />)}
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
