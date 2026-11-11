@@ -7,11 +7,11 @@ import { formatWeight } from "../../components/tracking/format";
 import { getHistory } from "../../api/tracking";
 import { errMessage } from "../../utils/errors";
 import { useParcelDetails } from "./useParcelDetails";
+import { useLiveTracking } from "./useLiveTracking";
 import type { HistoryItem } from "../../types/tracking";
 import "../../components/tracking/tracking.css";
 
-// Polling for now. The SSE live connection (/live) replaces this once the worker gateway is built,
-// and polling stays as the fallback when that connection drops.
+// Updates arrive over SSE. Polling every 15s is the fallback while that connection is down (or in mock mode).
 export const POLL_MS = 15_000;
 
 export default function LiveTracking() {
@@ -20,7 +20,9 @@ export default function LiveTracking() {
   const [active, setActive] = useState<HistoryItem[]>([]);
   const [listError, setListError] = useState("");
   const [listLoading, setListLoading] = useState(true);
-  const { parcel, loading, error, reload } = useParcelDetails(selected || undefined);
+  const { parcel, loading, error, reload, applyLive } = useParcelDetails(selected || undefined);
+  const finished = parcel ? ["DELIVERED", "FAILED", "CANCELLED"].includes(parcel.status) : true;
+  const mode = useLiveTracking(selected && parcel && !finished ? selected : undefined, applyLive);
 
   useEffect(() => {
     let live = true;
@@ -37,16 +39,16 @@ export default function LiveTracking() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const finished = parcel ? ["DELIVERED", "FAILED", "CANCELLED"].includes(parcel.status) : true;
+  const polling = mode === "polling";
   useEffect(() => {
-    if (!selected || finished) return;
+    if (!selected || finished || !polling) return;
     const timer = setInterval(() => {
       if (document.visibilityState === "visible") reload();
     }, POLL_MS);
     return () => clearInterval(timer);
     // reload is recreated each render; the interval only depends on the selected parcel.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selected, finished]);
+  }, [selected, finished, polling]);
 
   const options = active.some((p) => p.trackingNumber === selected) || !selected
     ? active
@@ -67,8 +69,10 @@ export default function LiveTracking() {
         </select>
         {parcel && (
           <span className="live-state">
-            {finished ? "Delivery finished" : "Updates automatically"}
-            <span className={`live-pill${finished ? " paused" : ""}`}>{finished ? "Final" : "Live"}</span>
+            {finished ? "Delivery finished" : mode === "live" ? "Updates automatically" : "Refreshing every 15 seconds"}
+            <span className={`live-pill${mode === "live" ? "" : " paused"}`}>
+              {finished ? "Final" : mode === "live" ? "Live" : mode === "connecting" ? "Connecting" : "Auto-refresh"}
+            </span>
           </span>
         )}
       </div>

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { getParcelDetails } from "../../api/tracking";
 import { errMessage } from "../../utils/errors";
-import type { ParcelDetails } from "../../types/tracking";
+import type { ParcelDetails, PublicTracking } from "../../types/tracking";
 
 /** Loads one owned parcel. reload() refetches quietly (used by Live Tracking polling). */
 export function useParcelDetails(trackingNumber: string | undefined) {
@@ -35,5 +35,12 @@ export function useParcelDetails(trackingNumber: string | undefined) {
     return () => { active = false; };
   }, [trackingNumber]);
 
-  return { parcel, loading, error, reload: () => load(true) };
+  /** Applies a live update (status + timeline) without refetching the whole parcel. */
+  const applyLive = useCallback((update: PublicTracking) => {
+    setParcel((current) => current && current.trackingNumber === update.trackingNumber
+      ? { ...current, status: update.status, timeline: update.timeline }
+      : current);
+  }, []);
+
+  return { parcel, loading, error, reload: () => load(true), applyLive };
 }
