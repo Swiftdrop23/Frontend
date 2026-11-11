@@ -1,7 +1,10 @@
 import CreateDelivery from "../pages/customer/CreateDelivery";
 import CancelDelivery from "../pages/customer/CancelDelivery";
 import RecoverDelivery from "../pages/customer/RecoverDelivery";
-import Placeholder from "../components/Placeholder";
+import LiveTracking from "../pages/customer/LiveTracking";
+import DeliveryHistory from "../pages/customer/DeliveryHistory";
+import DeliveryDetails from "../pages/customer/DeliveryDetails";
+import DeliveryReceipt from "../pages/customer/DeliveryReceipt";
 import Notifications from "../pages/notifications/Notifications";
 import NotificationSettings from "../pages/notifications/NotificationSettings";
 import { accountRoutes } from "./accountRoutes";
@@ -13,8 +16,10 @@ export const customerRoutes: PageRoute[] = [
   { path: "create-delivery", element: <CreateDelivery /> },
   { path: "cancel-delivery", element: <CancelDelivery /> },
   { path: "recover-delivery", element: <RecoverDelivery /> },
-  { path: "live-tracking", element: <Placeholder /> },
-  { path: "delivery-history", element: <Placeholder /> },
+  { path: "live-tracking", element: <LiveTracking /> },
+  { path: "delivery-history", element: <DeliveryHistory /> },
+  { path: "delivery-history/:trackingNumber", element: <DeliveryDetails /> },
+  { path: "delivery-history/:trackingNumber/receipt", element: <DeliveryReceipt /> },
   { path: "notifications", element: <Notifications /> },
   { path: "notifications/settings", element: <NotificationSettings /> },
   ...accountRoutes("CUSTOMER"),

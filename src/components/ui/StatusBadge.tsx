@@ -10,6 +10,7 @@ const LABELS: Record<BadgeStatus, string> = {
   IN_TRANSIT: "In transit",
   OUT_FOR_DELIVERY: "Out for delivery",
   DELIVERED: "Delivered",
+  FAILED: "Failed",
   CANCELLED: "Cancelled",
   APPROVED: "Approved",
   REJECTED: "Rejected",

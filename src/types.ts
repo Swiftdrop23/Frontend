@@ -38,6 +38,7 @@ export type ParcelStatus =
   | "IN_TRANSIT"
   | "OUT_FOR_DELIVERY"
   | "DELIVERED"
+  | "FAILED"
   | "CANCELLED";
 
 // Mirrors the Parcel entity in the Spring Boot backend (swiftdrop.backend.parcel.Parcel).
