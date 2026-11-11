@@ -89,6 +89,16 @@ export async function getHistory(filter: HistoryFilter = "all", page = 0, size =
   return { items, page, size, hasMore: rows.length > (page + 1) * size };
 }
 
+/**
+ * Server-Sent Events URL for live updates, or null in mock mode (the page then refreshes on a timer).
+ * The stream sends the public view only, so no login token is needed (EventSource cannot send headers).
+ */
+export function liveTrackingUrl(trackingNumber: string): string | null {
+  const base = import.meta.env.VITE_API_URL;
+  if (!base) return null;
+  return `${base}/v1/tracking/live/${encodeURIComponent(normalise(trackingNumber))}`;
+}
+
 /** Delivery details, receipt and Live Tracking pages. Only the parcel's owner gets a result. */
 export async function getParcelDetails(trackingNumber: string): Promise<ParcelDetails> {
   if (!isMock) return request<ParcelDetails>("GET", `/v1/tracking/parcels/${encodeURIComponent(normalise(trackingNumber))}`);
