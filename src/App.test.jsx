@@ -13,6 +13,34 @@ function renderRoute(path) {
 afterEach(clearSession);
 
 describe("Quote routing and existing routes", () => {
+  it("protects saved confirmation lookup while allowing the customer recovery screen", () => {
+    const visitor = renderRoute("/customer/recover-delivery?quote=fixture-quote");
+    expect(screen.getByRole("heading", { name: "Welcome back" })).toBeVisible();
+    visitor.unmount();
+    saveSession({ token: "test-token", user: { name: "Test Customer", role: "CUSTOMER" } });
+    const customer = renderRoute("/customer/recover-delivery?quote=fixture-quote");
+    expect(screen.getByRole("heading", { name: "Check a previous confirmation" })).toBeVisible();
+    expect(screen.getByLabelText("Quote reference")).toHaveValue("fixture-quote");
+    customer.unmount();
+    saveSession({ token: "test-token", user: { name: "Test Merchant", role: "MERCHANT" } });
+    renderRoute("/customer/recover-delivery");
+    expect(screen.getByRole("heading", { name: "Welcome back" })).toBeVisible();
+  });
+  it("protects the cancellation screen and exposes it in customer navigation", () => {
+    const visitor = renderRoute("/customer/cancel-delivery");
+    expect(screen.getByRole("heading", { name: "Welcome back" })).toBeVisible();
+    visitor.unmount();
+    saveSession({ token: "test-token", user: { name: "Test Customer", role: "CUSTOMER" } });
+    const customer = renderRoute("/customer/cancel-delivery?tracking=fixture-tracking");
+    expect(screen.getByRole("heading", { name: "Cancel a delivery" })).toBeVisible();
+    expect(screen.getByLabelText("Tracking number")).toHaveValue("fixture-tracking");
+    expect(screen.getByRole("link", { name: "Cancel Delivery" })).toHaveAttribute("href", "/customer/cancel-delivery");
+    customer.unmount();
+    saveSession({ token: "test-token", user: { name: "Test Merchant", role: "MERCHANT" } });
+    renderRoute("/customer/cancel-delivery");
+    expect(screen.getByRole("heading", { name: "Welcome back" })).toBeVisible();
+  });
+
   it("allows a visitor to open the quote route directly and navigate to login", async () => {
     const user = userEvent.setup();
     renderRoute("/get-a-quote");

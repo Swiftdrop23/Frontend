@@ -1,0 +1,30 @@
+.page-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.page-head h2 { margin: 0; font-size: 22px; }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.card-head h3 { margin: 0; }
+
+.table-wrap { overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; font-size: 15px; }
+.table th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); padding: 10px 12px; border-bottom: 1px solid #e6e9f2; white-space: nowrap; }
+.table td { padding: 12px; border-bottom: 1px solid #eef0f6; vertical-align: middle; }
+.table tbody tr:last-child td { border-bottom: none; }
+.table tbody tr:hover { background: #f8f9fd; }
+
+.badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+.badge.pending { background: #fff4e5; color: #b54708; }
+.badge.created { background: #eef4ff; color: #3538cd; }
+.badge.picked_up { background: #eef4ff; color: #3538cd; }
+.badge.in_transit { background: #e0f2fe; color: #026aa2; }
+.badge.out_for_delivery { background: #f4ebff; color: #6941c6; }
+.badge.delivered { background: #ecfdf3; color: #067647; }
+.badge.cancelled { background: #fef3f2; color: var(--err); }
+
+.empty { text-align: center; padding: 32px 16px; color: var(--muted); }
+.empty strong { display: block; color: var(--ink); font-size: 17px; margin-bottom: 4px; }
+
+.modal-backdrop { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 16px; background: rgba(17, 24, 39, 0.5); }
+.modal { width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; background: #fff; border-radius: 16px; padding: 20px 22px; }
+.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.modal-head h3 { margin: 0; font-size: 20px; }
+.modal-close { border: none; background: none; font-size: 26px; line-height: 1; cursor: pointer; color: var(--muted); }
+.modal-foot { display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px; }

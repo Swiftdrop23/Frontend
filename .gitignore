@@ -22,3 +22,18 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local configuration may contain credentials
+.env
+.env.*
+!.env.example
+
+# Local operator artifacts, backups and temporary previews
+.local-backups/
+target/
+coverage/
+playwright-report/
+test-results/
+preview-fixtures/
+*.dump
+*.bak

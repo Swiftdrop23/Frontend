@@ -1,0 +1,6 @@
+.m2-delivery .delivery-cancel-result { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--delivery-border); }
+.m2-delivery .delivery-cancel-result h3:focus-visible { outline: 3px solid #9a410c; outline-offset: 4px; border-radius: 2px; }
+.m2-delivery .delivery-cancel-result .delivery-status { margin: 0; }
+.m2-delivery .delivery-cancel-reference { padding: 12px 14px; background: #f5f7fb; border-radius: 8px; font-size: 12px; overflow-wrap: anywhere; }
+.m2-delivery .delivery-cancel-reference strong { display: block; font-size: 15px; font-family: ui-monospace, monospace; margin-top: 4px; }
+.m2-delivery .delivery-cancel-success { border: 1px solid #b9decb; background: #edf8f2; color: #166044; border-radius: 10px; padding: 14px; font-size: 14px; }

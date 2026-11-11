@@ -1,7 +1,7 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import CreateDelivery from "./CreateDelivery";
+import CreateDelivery from "./customer/CreateDelivery";
 
 const validDetails = [
   [/^Pickup address/i, "12 Flower Road, Colombo 07"],

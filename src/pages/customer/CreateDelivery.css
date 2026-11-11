@@ -1,0 +1,33 @@
+﻿.m2-delivery.delivery-request { max-width: 1020px; margin: 12px auto 32px; }
+.m2-delivery .delivery-flow-header { display: flex; align-items: flex-start; gap: 30px; justify-content: space-between; }
+.m2-delivery .delivery-flow-header .delivery-steps { flex: 1; max-width: 540px; }
+.m2-delivery .delivery-flow-header > .hint { margin-top: 8px; text-align: right; }
+.m2-delivery .delivery-grid { display: grid; grid-template-columns: minmax(0, 1fr) 302px; gap: 22px; align-items: start; }
+.m2-delivery.delivery-request fieldset { border: 0; padding: 20px 0 0; margin: 20px 0 0; border-top: 1px solid #e9edf3; min-width: 0; }
+.m2-delivery.delivery-request legend { float: left; width: 100%; padding: 0; margin-bottom: 14px; font-size: 14px; font-weight: 700; }
+.m2-delivery.delivery-request fieldset > .field:first-of-type { clear: both; }
+.m2-delivery.delivery-request fieldset > .delivery-two-fields { clear: both; }
+.m2-delivery.delivery-request fieldset:last-of-type { margin-bottom: 20px; }
+.m2-delivery .delivery-dimensions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.m2-delivery .delivery-form-note { text-align: center; margin: 12px 0 0; }
+.m2-delivery.delivery-request .delivery-estimate { border-top: 3px solid var(--orange); }
+.m2-delivery .delivery-estimate hr { border: 0; border-top: 1px solid #e5eaf2; margin: 22px 0; }
+.m2-delivery .delivery-estimate .btn + .btn { margin-top: 8px; }
+.m2-delivery .delivery-estimate h3 { font-size: 14px; }
+.m2-delivery .delivery-estimate code { font-size: 11px; }
+.m2-delivery .delivery-price { font-size: 32px; font-weight: 750; letter-spacing: -.04em; line-height: 1.2; margin: 16px 0 10px; overflow-wrap: anywhere; }
+.m2-delivery .delivery-unavailable { display: inline-flex; margin: 10px 0 14px; padding: 5px 9px; border-radius: 6px; font-size: 12px; font-weight: 600; background: #fff1df; color: #8a4212; }
+.m2-delivery .delivery-route-row { padding-left: 30px !important; position: relative; }
+.m2-delivery .delivery-route-row .delivery-icon { position: absolute; left: 0; top: 16px; width: 18px; height: 18px; color: #a74a0c; }
+.m2-delivery.delivery-success .card { padding: 32px; border-top: 4px solid #24805b; }
+.m2-delivery.delivery-success h2 { font-size: 29px; }
+.m2-delivery.delivery-success .delivery-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 8px; }
+@media (max-width: 1050px) { .m2-delivery .delivery-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 600px) {
+  .m2-delivery .delivery-flow-header { flex-direction: column; gap: 0; }
+  .m2-delivery .delivery-flow-header .delivery-steps { width: 100%; margin-bottom: 12px; }
+  .m2-delivery .delivery-flow-header > .hint { text-align: left; margin: 0 0 20px; }
+  .m2-delivery .delivery-dimensions { gap: 8px; }
+  .m2-delivery .delivery-dimensions input { padding: 0 8px; }
+  .m2-delivery.delivery-success .card { padding: 22px; }
+}
