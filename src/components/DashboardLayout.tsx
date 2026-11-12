@@ -3,7 +3,11 @@ import { NAV } from "../config/navigation";
 import { clearSession, getUser } from "../api/auth";
 import type { Role } from "../types";
 
-const EXTRA_TITLES: Record<string, string> = { "profile/change-password": "Change Password" };
+const EXTRA_TITLES: Record<string, string> = {
+  "profile/change-password": "Change Password",
+  "zones-pricing/add-zone": "Add Zone",
+  "zones-pricing/add-rule": "Add Pricing Rule",
+};
 
 export default function DashboardLayout({ role }: { role: Role }) {
   const user = getUser();
@@ -14,8 +18,9 @@ export default function DashboardLayout({ role }: { role: Role }) {
   if (!user || user.role !== role) return <Navigate to="/login" replace />;
 
   const current = cfg.items.find(([, p]) => pathname.startsWith(`${cfg.base}/${p}`));
-  const extra = Object.entries(EXTRA_TITLES).find(([p]) => pathname.endsWith("/" + p));
-  const title = extra ? extra[1] : current ? current[0] : "Dashboard";
+  const extra = Object.entries(EXTRA_TITLES).find(([p]) => pathname.endsWith("/" + p) || pathname.includes("/" + p + "/"));
+  const title = extra ? extra[1] : pathname.match(/\/zones-pricing\/edit-rule\//) ? "Edit Pricing Rule"
+    : pathname.endsWith("/reports/delivery-report") ? "Delivery Report" : current ? current[0] : "Dashboard";
   const logout = () => {
     clearSession();
     nav("/login", { replace: true });
