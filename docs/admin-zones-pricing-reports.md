@@ -1,8 +1,8 @@
 # Admin zones, pricing, and reports
 
-The admin screens use `/api/admin` when `VITE_API_URL=/api`; without an API URL,
-they use browser-local demo data. The Vite development server proxies `/api` to
-`http://127.0.0.1:8080`.
+The admin screens always load and save through `/api/admin`; they do not use
+browser-local demo data. Configure `VITE_API_URL=/api`. The Vite development
+server proxies `/api` to `http://127.0.0.1:8080`.
 
 ## Local setup
 
@@ -24,10 +24,14 @@ login for database writes.
 ## Database
 
 Migration V5 creates `delivery_zones` and `delivery_pricing_rules`. It does not
-seed the screenshot's sample prices. Zone and rule changes are stored in Neon;
-all clients using the same backend/database see those saved changes. The
-reports endpoints aggregate parcel records and count `CANCELLED` as failed
-because the current parcel status model has no separate `FAILED` value.
+seed the screenshot's sample zones or prices. A read-only inspection of the
+configured Neon database found zero rows in `delivery_zones`,
+`delivery_pricing_rules`, `merchant_orders`, and `api_credentials`; it found one
+existing `PENDING` parcel. The zones/pricing screen therefore starts empty and
+reports are computed from actual parcel rows. New zone and rule edits are saved
+to Neon; clients using the same backend/database see those edits. The reports
+endpoints count `CANCELLED` as failed because the current parcel status model
+has no separate `FAILED` value.
 
 The admin tariff table is not yet the delivery quote engine's configuration:
 the latter expects approved zone-pair and weight-band rules, while this screen

@@ -17,7 +17,7 @@ export default function ZonesPricing() {
   const zoneById = new Map(zones.map((zone) => [zone.id, zone]));
   return (
     <div className="admin-page">
-      <div className="admin-page-actions"><p className="admin-note">Fees below are sample values.</p><Link className="admin-button primary" to="/admin/zones-pricing/add-zone">Add zone</Link></div>
+      <div className="admin-page-actions"><p className="admin-note">Zones and fees saved in the shared database.</p><Link className="admin-button primary" to="/admin/zones-pricing/add-zone">Add zone</Link></div>
       <section className="admin-panel" aria-label="Pricing rules">
         <div className="admin-section-head"><h2>Pricing rules</h2><Link className="admin-button" to="/admin/zones-pricing/add-rule">Add pricing rule</Link></div>
         {loading && <p className="admin-muted" role="status">Loading zones and pricing rules…</p>}
@@ -32,7 +32,7 @@ export default function ZonesPricing() {
           </tbody>
         </table></div>}
       </section>
-      <p className="admin-sample">Sample data. Changes are saved in this browser only.</p>
+      <p className="admin-sample">Updates are saved to the shared database.</p>
     </div>
   );
 }
