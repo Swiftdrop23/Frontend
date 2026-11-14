@@ -1,5 +1,4 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
@@ -9,6 +8,7 @@ import { NAV, homePath } from "./config/navigation";
 import type { NavConfig } from "./config/navigation";
 import { ROUTES } from "./routes";
 import { publicRoutes } from "./routes/publicRoutes";
+import { authRoutes } from "./routes/authRoutes";
 import { getUser } from "./api/auth";
 import type { Role } from "./types";
 
@@ -22,7 +22,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Start />} />
-      <Route path="/login" element={<Login />} />
+      {authRoutes.map((route) => <Route key={route.path} path={route.path} element={route.element} />)}
       {publicRoutes.map((route) => <Route key={route.path} path={route.path} element={route.element} />)}
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />

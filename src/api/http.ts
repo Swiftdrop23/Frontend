@@ -1,10 +1,11 @@
 // Shared request helper. When VITE_API_URL is not set, callers fall back to mock data.
+import { getAccessToken } from "./auth";
 const API = import.meta.env.VITE_API_URL;
 export const isMock = !API;
 export const wait = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
 export async function request<T = unknown>(method: string, path: string, body?: unknown): Promise<T> {
-  const token = localStorage.getItem("token");
+  const token = await getAccessToken();
   let res: Response;
   try {
     res = await fetch(`${API}${path}`, {

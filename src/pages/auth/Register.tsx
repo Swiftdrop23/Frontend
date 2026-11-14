@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import AuthLayout from "../../components/AuthLayout";
 import Field from "../../components/Field";
 import type { FieldChange } from "../../components/Field";
@@ -43,7 +43,9 @@ const FORMS: Record<AccountType, FormConfig> = {
 };
 
 export default function Register() {
-  const [role, setRole] = useState<AccountType | "">("");
+  const [params] = useSearchParams();
+  const preset = params.get("type")?.toUpperCase();
+  const [role, setRole] = useState<AccountType | "">(preset === "CUSTOMER" || preset === "MERCHANT" ? preset : "");
   const [v, setV] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [msg, setMsg] = useState("");

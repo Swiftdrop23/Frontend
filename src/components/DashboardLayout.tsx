@@ -1,6 +1,6 @@
 import { NavLink, Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { NAV } from "../config/navigation";
-import { clearSession, getUser } from "../api/auth";
+import { clearSession, getUser, logout as signOutOnServer } from "../api/auth";
 import type { Role } from "../types";
 
 const EXTRA_TITLES: Record<string, string> = { "profile/change-password": "Change Password" };
@@ -11,14 +11,16 @@ export default function DashboardLayout({ role }: { role: Role }) {
   const { pathname } = useLocation();
   const cfg = NAV[role];
 
-  if (!user || user.role !== role) return <Navigate to="/login" replace />;
+  const loginPath = role === "ADMIN" ? "/admin-login" : "/login";
+  if (!user || user.role !== role) return <Navigate to={loginPath} replace />;
 
   const current = cfg.items.find(([, p]) => pathname.startsWith(`${cfg.base}/${p}`));
   const extra = Object.entries(EXTRA_TITLES).find(([p]) => pathname.endsWith("/" + p));
   const title = extra ? extra[1] : current ? current[0] : "Dashboard";
   const logout = () => {
+    void signOutOnServer();
     clearSession();
-    nav("/login", { replace: true });
+    nav(loginPath, { replace: true });
   };
 
   return (
