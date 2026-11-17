@@ -1,12 +1,15 @@
 import Placeholder from "../components/Placeholder";
 import ChangePassword from "../pages/account/ChangePassword";
+import Orders from "../pages/merchant/Orders";
+import OrderDetail from "../pages/merchant/OrderDetail";
+import ApiKeys from "../pages/merchant/ApiKeys";
 import type { PageRoute } from "./pageRoute";
 
-// Merchant pages. Put your page components in src/pages/merchant/ and replace the matching <Placeholder />.
-// "profile" is the Business Profile page (replace its Placeholder with the real page).
+// Merchant pages. "profile" is the Business Profile page (replace its Placeholder with the real page).
 export const merchantRoutes: PageRoute[] = [
-  { path: "orders", element: <Placeholder /> },
-  { path: "api-keys", element: <Placeholder /> },
+  { path: "orders", element: <Orders /> },
+  { path: "orders/:id", element: <OrderDetail /> },
+  { path: "api-keys", element: <ApiKeys /> },
   { path: "webhooks", element: <Placeholder /> },
   { path: "notifications", element: <Placeholder /> },
   { path: "profile", element: <Placeholder /> },
