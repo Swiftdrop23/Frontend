@@ -2,7 +2,6 @@ import type { ParcelStatus } from "../../types";
 import "./ui.css";
 
 const LABELS: Record<ParcelStatus, string> = {
-  CREATED: "Created",
   PENDING: "Pending",
   PICKED_UP: "Picked up",
   IN_TRANSIT: "In transit",

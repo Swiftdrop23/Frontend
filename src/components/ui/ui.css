@@ -12,7 +12,6 @@
 
 .badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; white-space: nowrap; }
 .badge.pending { background: #fff4e5; color: #b54708; }
-.badge.created { background: #eef4ff; color: #3538cd; }
 .badge.picked_up { background: #eef4ff; color: #3538cd; }
 .badge.in_transit { background: #e0f2fe; color: #026aa2; }
 .badge.out_for_delivery { background: #f4ebff; color: #6941c6; }
