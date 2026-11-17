@@ -54,7 +54,6 @@ export default function Login() {
       <p className="or">or</p>
       <button type="button" className="btn" onClick={() => setMsg("Google sign-in will be connected once the backend is ready.")}>Continue with Google</button>
       <div className="links">
-        <Link to="/get-a-quote">Get a Quote</Link>
         <Link to="/register">New here? Create an account</Link>
       </div>
     </AuthLayout>
