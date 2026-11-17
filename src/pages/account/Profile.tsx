@@ -3,11 +3,35 @@ import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
 import Field from "../../components/Field";
 import type { FieldChange } from "../../components/Field";
+import { getAdminProfile } from "../../api/adminAccount";
 import { getProfile, updateProfile, listAddresses, saveAddress, deleteAddress } from "../../api/users";
 import { isPhone } from "../../utils/validate";
 import { errMessage } from "../../utils/errors";
 import type { Address, Notice, Profile as ProfileData, Role } from "../../types";
 import "../../profile.css";
+
+function AdminProfilePanel() {
+  const [profile, setProfile] = useState<{ fullName: string; email: string; role: string } | null>(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    getAdminProfile().then(setProfile)
+      .catch((caught: unknown) => setError(caught instanceof Error ? caught.message : "Could not load admin account."));
+  }, []);
+
+  return (
+    <section className="card narrow">
+      <h3>Admin account</h3>
+      {error && <p className="notice error" role="alert">{error}</p>}
+      {!profile && !error && <p className="hint" role="status">Loading account details…</p>}
+      {profile && <dl className="profile-details">
+        <dt>Name</dt><dd>{profile.fullName}</dd>
+        <dt>Email</dt><dd>{profile.email}</dd>
+        <dt>Role</dt><dd>{profile.role}</dd>
+      </dl>}
+    </section>
+  );
+}
 
 function PersonalDetails() {
   const [f, setF] = useState<ProfileData>({ fullName: "", email: "", phone: "" });
@@ -134,6 +158,8 @@ function SavedAddresses() {
 
 // Saved addresses are for customers only. Merchants use the Business Profile page (Member 4).
 export default function Profile({ role }: { role: Role }) {
+  if (role === "ADMIN") return <AdminProfilePanel />;
+
   return (
     <div className={`profile-grid ${role === "CUSTOMER" ? "profile-wide grid-2" : "profile-single"}`}>
       <PersonalDetails />

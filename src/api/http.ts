@@ -17,6 +17,16 @@ export async function request<T = unknown>(method: string, path: string, body?: 
     throw new Error("Cannot reach the server. Check your connection and try again.");
   }
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.message || "Something went wrong. Please try again.");
+  if (!res.ok) {
+    const message = data.message || "Something went wrong. Please try again.";
+    if (res.status === 401 && token) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      if (typeof window !== "undefined" && window.location.pathname !== "/login") {
+        window.location.replace("/login");
+      }
+    }
+    throw new Error(message);
+  }
   return data as T;
 }
