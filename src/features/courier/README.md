@@ -29,6 +29,7 @@ authenticate a user and does not call the group database.
 Run from `Frontend`:
 
 ```powershell
+npm run typecheck:courier
 node src/features/courier/statusRules.test.js
 npm exec vite build -- --config src/features/courier/vite.config.js
 ```
