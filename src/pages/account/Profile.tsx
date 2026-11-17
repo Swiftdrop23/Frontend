@@ -135,7 +135,7 @@ function SavedAddresses() {
 // Saved addresses are for customers only. Merchants use the Business Profile page (Member 4).
 export default function Profile({ role }: { role: Role }) {
   return (
-    <div className={`profile-grid ${role === "CUSTOMER" ? "profile-wide grid-2" : "profile-single"}`}>
+    <div className="grid-2">
       <PersonalDetails />
       {role === "CUSTOMER" && <SavedAddresses />}
     </div>
