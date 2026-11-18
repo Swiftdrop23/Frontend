@@ -52,3 +52,58 @@ export interface Parcel {
 }
 
 export type NewParcel = Pick<Parcel, "senderName" | "receiverName" | "receiverAddress">;
+
+export type MerchantStatus = "PENDING" | "APPROVED" | "REJECTED";
+
+export interface MerchantApplication {
+  id: string;
+  businessName: string;
+  registrationNo: string;
+  contactName: string;
+  email: string;
+  phone: string;
+  address: string;
+  status: MerchantStatus;
+  submittedAt: string;
+  rejectionReason?: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+}
+export type MerchantOrderStatus = "PENDING" | "IN_TRANSIT" | "DELIVERED" | "CANCELLED";
+export type ParcelSize = "SMALL" | "MEDIUM" | "LARGE";
+
+export interface Merchant {
+  id: string;
+  businessName: string;
+  ownerName: string;
+  email: string;
+  phone: string;
+  registrationNo: string;
+  address: string;
+  registeredAt: string;
+  status: MerchantStatus;
+  rejectionReason?: string;
+}
+
+export interface MerchantOrder {
+  id: string;
+  trackingNumber: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  pickupContactName: string;
+  pickupContactPhone: string;
+  pickupAddress: string;
+  receiverName: string;
+  receiverPhone: string;
+  deliveryAddress: string;
+  parcelDescription: string;
+  weight: number;
+  size: ParcelSize;
+  specialInstructions: string;
+  deliveryFee: number;
+  status: MerchantOrderStatus;
+  createdAt: string;
+}
+
+export type NewMerchantOrder = Omit<MerchantOrder, "id" | "trackingNumber" | "deliveryFee" | "status" | "createdAt">;

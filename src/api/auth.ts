@@ -3,6 +3,18 @@ import type { OkResponse, Role, Session, User } from "../types";
 const API = import.meta.env.VITE_API_URL;
 const wait = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
+export class ApiError extends Error {
+  status: number;
+  fieldErrors: Record<string, string>;
+
+  constructor(status: number, message: string, fieldErrors: Record<string, string> = {}) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.fieldErrors = fieldErrors;
+  }
+}
+
 async function post<T>(path: string, body: unknown, mock: T): Promise<T> {
   if (!API) {
     await wait(500);
@@ -19,7 +31,18 @@ async function post<T>(path: string, body: unknown, mock: T): Promise<T> {
     throw new Error("Cannot reach the server. Check your connection and try again.");
   }
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.message || "Something went wrong. Please try again.");
+  if (!res.ok) {
+    const rawFieldErrors = data.fieldErrors ?? data.errors;
+    const fieldErrors: Record<string, string> =
+      rawFieldErrors && typeof rawFieldErrors === "object"
+        ? Array.isArray(rawFieldErrors)
+          ? Object.fromEntries(rawFieldErrors
+              .filter((item: { field?: string; message?: string }) => item.field)
+              .map((item: { field: string; message: string }) => [item.field, item.message]))
+          : rawFieldErrors
+        : {};
+    throw new ApiError(res.status, data.message || "Something went wrong. Please try again.", fieldErrors);
+  }
   return data as T;
 }
 
@@ -31,8 +54,25 @@ function mockUser(email: string): User {
   return { name: "Demo User", role };
 }
 
-export const login = (email: string, password: string) =>
-  post<Session>("/auth/login", { email, password }, { token: "dev-token", user: mockUser(email) });
+export const login = async (email: string, password: string) => {
+  if (!API) {
+    await wait(500);
+    if (email.toLowerCase().endsWith("@merchant.test")) {
+      let status = "PENDING";
+      let rejectionReason = "";
+      try {
+        const merchant = JSON.parse(localStorage.getItem("swiftdrop.mock.merchant") ?? "{}");
+        status = merchant.status ?? status;
+        rejectionReason = merchant.rejectionReason ?? "";
+      } catch {
+        // Use the mock pending status.
+      }
+      if (status === "PENDING") throw new ApiError(403, "ඔබගේ අයදුම්පත සමාලෝචනය වෙමින් පවතී.");
+      if (status === "REJECTED") throw new ApiError(403, `ඔබගේ අයදුම්පත ප්‍රතික්ෂේප කරන ලදී.${rejectionReason ? ` Reason: ${rejectionReason}` : ""}`);
+    }
+  }
+  return post<Session>("/auth/login", { email, password }, { token: "dev-token", user: mockUser(email) });
+};
 export const registerCustomer = (data: Record<string, string>) =>
   post<OkResponse>("/auth/register/customer", data, { ok: true });
 export const registerMerchant = (data: Record<string, string>) =>

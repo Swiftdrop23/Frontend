@@ -18,6 +18,8 @@
 .badge.out_for_delivery { background: #f4ebff; color: #6941c6; }
 .badge.delivered { background: #ecfdf3; color: #067647; }
 .badge.cancelled { background: #fef3f2; color: var(--err); }
+.badge.approved { background: #ecfdf3; color: #067647; }
+.badge.rejected { background: #fef3f2; color: var(--err); }
 
 .empty { text-align: center; padding: 32px 16px; color: var(--muted); }
 .empty strong { display: block; color: var(--ink); font-size: 17px; margin-bottom: 4px; }

@@ -1,13 +1,14 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import AuthLayout from "../../components/AuthLayout";
 import Field from "../../components/Field";
 import type { FieldChange } from "../../components/Field";
-import { registerCustomer, registerMerchant } from "../../api/auth";
+import { registerCustomer } from "../../api/auth";
 import { isEmail, isPhone, isStrong } from "../../utils/validate";
 import { errMessage } from "../../utils/errors";
 import type { OkResponse } from "../../types";
+import MerchantRegisterForm from "./MerchantRegisterForm";
 
 type AccountType = "CUSTOMER" | "MERCHANT";
 
@@ -18,7 +19,7 @@ interface FormConfig {
   fields: [name: string, label: string, type: string, placeholder: string][];
 }
 
-const FORMS: Record<AccountType, FormConfig> = {
+const FORMS: Record<"CUSTOMER", FormConfig> = {
   CUSTOMER: {
     submit: registerCustomer,
     button: "Create account",
@@ -28,28 +29,18 @@ const FORMS: Record<AccountType, FormConfig> = {
       ["phone", "Phone", "tel", "07X XXX XXXX"],
     ],
   },
-  MERCHANT: {
-    submit: registerMerchant,
-    button: "Submit application",
-    fields: [
-      ["businessName", "Business name", "text", "Your shop or company name"],
-      ["registrationNo", "Business registration number", "text", "e.g. PV 12345"],
-      ["fullName", "Contact person", "text", "Owner or manager's full name"],
-      ["email", "Business email", "email", "shop@example.com"],
-      ["phone", "Business phone", "tel", "07X XXX XXXX"],
-      ["address", "Business address", "text", "Street, city"],
-    ],
-  },
 };
 
 export default function Register() {
-  const [role, setRole] = useState<AccountType | "">("");
+  const location = useLocation();
+  const [role, setRole] = useState<AccountType | "">(location.pathname === "/register/merchant" ? "MERCHANT" : "");
   const [v, setV] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [msg, setMsg] = useState("");
   const [done, setDone] = useState(false);
   const [busy, setBusy] = useState(false);
-  const cfg = role ? FORMS[role] : undefined;
+  const [showPassword, setShowPassword] = useState(false);
+  const cfg = role === "CUSTOMER" ? FORMS.CUSTOMER : undefined;
   const set = (e: FieldChange) => setV({ ...v, [e.target.name]: e.target.value });
 
   function pickRole(e: FieldChange) {
@@ -58,6 +49,8 @@ export default function Register() {
     setErrors({});
     setMsg("");
   }
+
+  if (role === "MERCHANT") return <MerchantRegisterForm />;
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -87,12 +80,8 @@ export default function Register() {
 
   if (done) {
     return (
-      <AuthLayout title={role === "MERCHANT" ? "Application submitted" : "Account created"}>
-        <div className="notice ok">
-          {role === "MERCHANT"
-            ? "An admin will review your business details. You can log in once your account is approved."
-            : "Your account is ready. Log in to start sending parcels."}
-        </div>
+      <AuthLayout title="Account created">
+        <div className="notice ok">Your account is ready. Log in to start sending parcels.</div>
         <Link className="btn primary" style={{ lineHeight: "46px", textAlign: "center", textDecoration: "none" }} to="/login">Go to login</Link>
       </AuthLayout>
     );
@@ -115,8 +104,8 @@ export default function Register() {
             {cfg.fields.map(([name, label, type, ph]) => (
               <Field key={name} label={label} name={name} type={type} placeholder={ph} value={v[name] || ""} onChange={set} error={errors[name]} />
             ))}
-            <Field label="Password" name="password" type="password" placeholder="At least 8 characters" autoComplete="new-password" value={v.password || ""} onChange={set} error={errors.password} />
-            <Field label="Confirm password" name="confirm" type="password" placeholder="Re-enter your password" autoComplete="new-password" value={v.confirm || ""} onChange={set} error={errors.confirm} />
+            <div className="password-field"><Field label="Password" name="password" type={showPassword ? "text" : "password"} placeholder="At least 8 characters" autoComplete="new-password" value={v.password || ""} onChange={set} error={errors.password} /><button type="button" className="password-toggle" onClick={() => setShowPassword((visible) => !visible)}>{showPassword ? "Hide" : "Show"}</button></div>
+            <div className="password-field"><Field label="Confirm password" name="confirm" type={showPassword ? "text" : "password"} placeholder="Re-enter your password" autoComplete="new-password" value={v.confirm || ""} onChange={set} error={errors.confirm} /><button type="button" className="password-toggle" onClick={() => setShowPassword((visible) => !visible)}>{showPassword ? "Hide" : "Show"}</button></div>
             <button className="btn primary" disabled={busy}>{busy ? "Please wait..." : cfg.button}</button>
           </>
         )}

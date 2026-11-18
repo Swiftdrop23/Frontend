@@ -1,7 +1,9 @@
-import type { ParcelStatus } from "../../types";
+import type { MerchantStatus, ParcelStatus } from "../../types";
 import "./ui.css";
 
-const LABELS: Record<ParcelStatus, string> = {
+type BadgeStatus = ParcelStatus | MerchantStatus;
+
+const LABELS: Record<BadgeStatus, string> = {
   CREATED: "Created",
   PENDING: "Pending",
   PICKED_UP: "Picked up",
@@ -9,8 +11,10 @@ const LABELS: Record<ParcelStatus, string> = {
   OUT_FOR_DELIVERY: "Out for delivery",
   DELIVERED: "Delivered",
   CANCELLED: "Cancelled",
+  APPROVED: "Approved",
+  REJECTED: "Rejected",
 };
 
-export default function StatusBadge({ status }: { status: ParcelStatus }) {
+export default function StatusBadge({ status }: { status: BadgeStatus }) {
   return <span className={`badge ${status.toLowerCase()}`}>{LABELS[status]}</span>;
 }
