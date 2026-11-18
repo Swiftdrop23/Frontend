@@ -48,6 +48,11 @@ export function saveSession({ token, user }: Session): void {
 }
 
 export function getUser(): User | null {
+  // Do not keep a frontend-only demo session when the backend is configured.
+  if (API && localStorage.getItem("token") === "dev-token") {
+    clearSession();
+    return null;
+  }
   try {
     return JSON.parse(localStorage.getItem("user") ?? "null") as User | null;
   } catch {
