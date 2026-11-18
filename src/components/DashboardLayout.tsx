@@ -3,7 +3,10 @@ import { NAV } from "../config/navigation";
 import { clearSession, getUser } from "../api/auth";
 import type { Role } from "../types";
 
-const EXTRA_TITLES: Record<string, string> = { "profile/change-password": "Change Password" };
+const EXTRA_TITLES: Record<string, string> = {
+  "profile/change-password": "Change Password",
+  "notifications/settings": "Notification Settings",
+};
 
 export default function DashboardLayout({ role }: { role: Role }) {
   const user = getUser();
@@ -15,7 +18,8 @@ export default function DashboardLayout({ role }: { role: Role }) {
 
   const current = cfg.items.find(([, p]) => pathname.startsWith(`${cfg.base}/${p}`));
   const extra = Object.entries(EXTRA_TITLES).find(([p]) => pathname.endsWith("/" + p));
-  const title = extra ? extra[1] : current ? current[0] : "Dashboard";
+  const webhookDelivery = role === "MERCHANT" && pathname.startsWith(`${cfg.base}/webhooks/`);
+  const title = extra ? extra[1] : webhookDelivery ? "Webhook Delivery" : current?.[0] ?? "Dashboard";
   const logout = () => {
     clearSession();
     nav("/login", { replace: true });

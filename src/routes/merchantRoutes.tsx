@@ -1,4 +1,6 @@
 import Placeholder from "../components/Placeholder";
+import Webhooks from "../pages/notifications/Webhooks";
+import WebhookDelivery from "../pages/notifications/WebhookDelivery";
 import ChangePassword from "../pages/account/ChangePassword";
 import type { PageRoute } from "./pageRoute";
 
@@ -7,7 +9,8 @@ import type { PageRoute } from "./pageRoute";
 export const merchantRoutes: PageRoute[] = [
   { path: "orders", element: <Placeholder /> },
   { path: "api-keys", element: <Placeholder /> },
-  { path: "webhooks", element: <Placeholder /> },
+  { path: "webhooks", element: <Webhooks /> },
+  { path: "webhooks/:deliveryId", element: <WebhookDelivery /> },
   { path: "notifications", element: <Placeholder /> },
   { path: "profile", element: <Placeholder /> },
   { path: "profile/change-password", element: <ChangePassword /> },
