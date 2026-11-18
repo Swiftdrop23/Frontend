@@ -1,4 +1,4 @@
-import { act, render, screen, within } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import LiveTracking from "./customer/LiveTracking";
@@ -34,6 +34,13 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllGlobals());
 
+/** The stream opens in an effect after the parcel loads, so wait for it instead of assuming it is there. */
+async function openedSource() {
+  await screen.findByText("SD-000123", { selector: ".tracking-number" });
+  await waitFor(() => expect(FakeEventSource.instances.length).toBeGreaterThan(0));
+  return FakeEventSource.instances.at(-1);
+}
+
 function show() {
   render(
     <MemoryRouter initialEntries={["/customer/live-tracking?parcel=SD-000123"]}>
@@ -45,8 +52,7 @@ function show() {
 describe("Live Tracking over SSE", () => {
   it("connects to the parcel stream and applies pushed updates", async () => {
     show();
-    expect(await screen.findByText("SD-000123", { selector: ".tracking-number" })).toBeVisible();
-    const source = FakeEventSource.instances.at(-1);
+    const source = await openedSource();
     expect(source.url).toBe("http://api.test/api/v1/tracking/live/SD-000123");
 
     act(() => source.open());
@@ -72,8 +78,7 @@ describe("Live Tracking over SSE", () => {
 
   it("falls back to timed refresh when the connection drops", async () => {
     show();
-    await screen.findByText("SD-000123", { selector: ".tracking-number" });
-    const source = FakeEventSource.instances.at(-1);
+    const source = await openedSource();
     act(() => source.open());
     act(() => source.drop());
     expect(screen.getByText("Auto-refresh")).toBeVisible();
@@ -82,8 +87,7 @@ describe("Live Tracking over SSE", () => {
 
   it("closes the stream once the parcel is delivered", async () => {
     show();
-    await screen.findByText("SD-000123", { selector: ".tracking-number" });
-    const source = FakeEventSource.instances.at(-1);
+    const source = await openedSource();
     act(() => source.open());
     act(() => source.push({ trackingNumber: "SD-000123", status: "DELIVERED", timeline: [
       step("CREATED", "Created", true, false), step("PICKED_UP", "Picked Up", true, false),
