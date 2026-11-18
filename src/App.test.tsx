@@ -63,7 +63,7 @@ describe("Quote routing and existing routes", () => {
   it.each(Object.keys(NAV))("preserves the %s dashboard root redirect", (role) => {
     saveSession({ token: "test-token", user: { name: "Test User", role } });
     renderRoute("/");
-    expect(screen.getByRole("heading", { name: NAV[role].items[0][0], exact: true })).toBeVisible();
+    expect(screen.getByRole("heading", { level: 1, name: NAV[role].items[0][0], exact: true })).toBeVisible();
     expect(screen.getByRole("link", { name: NAV[role].items[0][0], exact: true })).toHaveAttribute("href", homePath(role));
     if (role === "CUSTOMER") {
       expect(screen.getByLabelText(/^Pickup address/)).toBeVisible();
