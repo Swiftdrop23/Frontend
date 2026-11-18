@@ -21,7 +21,7 @@ function showPublic(path = "/track") {
   return userEvent.setup();
 }
 
-function showCustomer(path) {
+function showCustomer(path: string) {
   render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>

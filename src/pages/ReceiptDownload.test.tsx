@@ -26,10 +26,12 @@ afterEach(() => { vi.unstubAllGlobals(); localStorage.clear(); });
 describe("Receipt PDF download", () => {
   it("downloads the PDF from the backend with the login token", async () => {
     vi.stubEnv("VITE_API_URL", "http://api.test/api");
-    const fetchMock = vi.fn(async () => new Response(new Blob(["%PDF-1.4"], { type: "application/pdf" }), { status: 200 }));
+    const fetchMock = vi.fn(async (_url: string, _options?: RequestInit) =>
+      new Response(new Blob(["%PDF-1.4"], { type: "application/pdf" }), { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
-    const clicks = [];
-    const click = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function () { clicks.push(this.download); });
+    const clicks: string[] = [];
+    const click = vi.spyOn(HTMLAnchorElement.prototype, "click")
+      .mockImplementation(function (this: HTMLAnchorElement) { clicks.push(this.download); });
     const print = vi.spyOn(window, "print").mockImplementation(() => {});
 
     const user = show();
@@ -38,7 +40,7 @@ describe("Receipt PDF download", () => {
     await waitFor(() => expect(clicks).toEqual(["SwiftDrop-receipt-SD-000099.pdf"]));
     const [url, options] = fetchMock.mock.calls[0];
     expect(url).toBe("http://api.test/api/v1/tracking/parcels/SD-000099/receipt.pdf");
-    expect(options.headers.Authorization).toBe("Bearer test-token");
+    expect((options?.headers as Record<string, string>).Authorization).toBe("Bearer test-token");
     expect(print).not.toHaveBeenCalled();
     click.mockRestore(); print.mockRestore();
   });

@@ -2,30 +2,41 @@ import { act, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import LiveTracking from "./customer/LiveTracking";
+import type { ParcelStatus } from "../types";
+import type { PublicTracking, TimelineStep } from "../types/tracking";
 
 // Data calls stay on mock data (http.ts reads VITE_API_URL once at import, which is empty in tests).
 // liveTrackingUrl reads it per call, so stubbing it here turns on the SSE path only.
 
+type Listener = (event: { data: string }) => void;
+
+/** Stand-in for the browser's EventSource, driven by the tests. */
 class FakeEventSource {
   static CONNECTING = 0;
   static OPEN = 1;
   static CLOSED = 2;
-  static instances = [];
-  constructor(url) {
+  static instances: FakeEventSource[] = [];
+
+  url: string;
+  readyState = FakeEventSource.CONNECTING;
+  listeners: Record<string, Listener[]> = {};
+  closed = false;
+  onopen?: () => void;
+  onerror?: () => void;
+
+  constructor(url: string) {
     this.url = url;
-    this.readyState = FakeEventSource.CONNECTING;
-    this.listeners = {};
-    this.closed = false;
     FakeEventSource.instances.push(this);
   }
-  addEventListener(name, fn) { (this.listeners[name] ??= []).push(fn); }
+  addEventListener(name: string, fn: Listener) { (this.listeners[name] ??= []).push(fn); }
   close() { this.closed = true; this.readyState = FakeEventSource.CLOSED; }
   open() { this.readyState = FakeEventSource.OPEN; this.onopen?.(); }
-  push(data) { (this.listeners.status ?? []).forEach((fn) => fn({ data: JSON.stringify(data) })); }
+  push(data: PublicTracking) { (this.listeners.status ?? []).forEach((fn) => fn({ data: JSON.stringify(data) })); }
   drop() { this.readyState = FakeEventSource.CONNECTING; this.onerror?.(); }
 }
 
-const step = (status, label, reached, current, at = null) => ({ status, label, reached, current, at });
+const step = (status: ParcelStatus, label: string, reached: boolean, current: boolean, at: string | null = null): TimelineStep =>
+  ({ status, label, reached, current, at });
 
 beforeEach(() => {
   FakeEventSource.instances = [];
@@ -35,10 +46,10 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 
 /** The stream opens in an effect after the parcel loads, so wait for it instead of assuming it is there. */
-async function openedSource() {
+async function openedSource(): Promise<FakeEventSource> {
   await screen.findByText("SD-000123", { selector: ".tracking-number" });
   await waitFor(() => expect(FakeEventSource.instances.length).toBeGreaterThan(0));
-  return FakeEventSource.instances.at(-1);
+  return FakeEventSource.instances[FakeEventSource.instances.length - 1];
 }
 
 function show() {
