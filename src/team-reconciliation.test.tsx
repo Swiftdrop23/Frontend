@@ -12,10 +12,14 @@ vi.mock("./api/users", async original => ({ ...(await original()),
   listAddresses: vi.fn().mockResolvedValue([]),
 }));
 
+vi.mock("./api/adminAccount", () => ({
+  getAdminProfile: vi.fn().mockResolvedValue({ fullName: "Fixture Admin", email: "admin@example.test", role: "ADMIN" }),
+}));
+
 afterEach(() => { clearSession(); vi.unstubAllGlobals(); });
 
 describe("Team frontend and delivery reconciliation", () => {
-  it.each(["CUSTOMER", "COURIER", "DISPATCHER", "ADMIN"])(
+  it.each(["CUSTOMER", "COURIER", "DISPATCHER"])(
     "keeps %s account routes and password navigation alongside delivery routes", async (role) => {
       saveSession({ token: "fixture-token", user: { name: "Fixture User", role } });
       const user = userEvent.setup();
@@ -26,6 +30,16 @@ describe("Team frontend and delivery reconciliation", () => {
       expect(screen.getByLabelText("Current password")).toBeVisible();
       expect(screen.queryByLabelText(/^Pickup address/)).not.toBeInTheDocument();
     });
+
+  it("shows the read-only ADMIN account and keeps password navigation", async () => {
+    saveSession({ token: "fixture-token", user: { name: "Fixture Admin", role: "ADMIN" } });
+    const user = userEvent.setup();
+    render(<MemoryRouter initialEntries={["/admin/profile"]}><App /></MemoryRouter>);
+    expect(await screen.findByText("admin@example.test")).toBeVisible();
+    expect(screen.queryByLabelText("Full name")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("link", { name: "Change password" }));
+    expect(screen.getByLabelText("Current password")).toBeVisible();
+  });
 
   it("preserves the merchant-owned profile placeholder", () => {
     saveSession({ token: "fixture-token", user: { name: "Fixture Merchant", role: "MERCHANT" } });

@@ -29,6 +29,9 @@ function AdminProfilePanel() {
         <dt>Email</dt><dd>{profile.email}</dd>
         <dt>Role</dt><dd>{profile.role}</dd>
       </dl>}
+      <div className="row">
+        <Link className="btn inline" to="change-password">Change password</Link>
+      </div>
     </section>
   );
 }
