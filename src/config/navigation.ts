@@ -16,7 +16,7 @@ export const NAV: Record<Role, NavConfig> = {
   DISPATCHER: { base: "/dispatcher", items: [["Unassigned Parcels", "unassigned-parcels"], ["Courier Workloads", "courier-workloads"], ...common] },
   ADMIN: {
     base: "/admin",
-    items: [["Zones & Pricing", "zones-pricing"], ["Reports", "reports"], ["Unassigned Parcels", "unassigned-parcels"], ["Courier Workloads", "courier-workloads"], ["Users", "users"], ["Merchant Approvals", "merchant-approvals"], ...common],
+    items: [["Zones & Pricing", "zones-pricing"], ["Reports", "reports"], ["Unassigned Parcels", "unassigned-parcels"], ["Courier Workloads", "courier-workloads"], ["Users", "users"], ["Merchant Approvals", "merchant-approvals"], ["Failed Webhooks", "failed-webhooks"], ...common],
   },
 };
 

@@ -2,6 +2,8 @@ import CreateDelivery from "../pages/customer/CreateDelivery";
 import CancelDelivery from "../pages/customer/CancelDelivery";
 import RecoverDelivery from "../pages/customer/RecoverDelivery";
 import Placeholder from "../components/Placeholder";
+import Notifications from "../pages/notifications/Notifications";
+import NotificationSettings from "../pages/notifications/NotificationSettings";
 import { accountRoutes } from "./accountRoutes";
 import type { PageRoute } from "./pageRoute";
 
@@ -13,6 +15,7 @@ export const customerRoutes: PageRoute[] = [
   { path: "recover-delivery", element: <RecoverDelivery /> },
   { path: "live-tracking", element: <Placeholder /> },
   { path: "delivery-history", element: <Placeholder /> },
-  { path: "notifications", element: <Placeholder /> },
+  { path: "notifications", element: <Notifications /> },
+  { path: "notifications/settings", element: <NotificationSettings /> },
   ...accountRoutes("CUSTOMER"),
 ];

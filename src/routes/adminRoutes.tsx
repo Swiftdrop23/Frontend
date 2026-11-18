@@ -1,4 +1,5 @@
 import Placeholder from "../components/Placeholder";
+import FailedWebhooks from "../pages/notifications/FailedWebhooks";
 import { accountRoutes } from "./accountRoutes";
 import type { PageRoute } from "./pageRoute";
 import ZonesPricing from "../pages/admin/ZonesPricing";
@@ -21,5 +22,6 @@ export const adminRoutes: PageRoute[] = [
   { path: "reports", element: <Reports /> },
   { path: "reports/delivery-report", element: <DeliveryReport /> },
   { path: "notifications", element: <Placeholder /> },
+  { path: "failed-webhooks", element: <FailedWebhooks /> },
   ...accountRoutes("ADMIN"),
 ];

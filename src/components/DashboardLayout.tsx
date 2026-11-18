@@ -7,6 +7,7 @@ const EXTRA_TITLES: Record<string, string> = {
   "profile/change-password": "Change Password",
   "zones-pricing/add-zone": "Add Zone",
   "zones-pricing/add-rule": "Add Pricing Rule",
+  "notifications/settings": "Notification Settings",
 };
 
 export default function DashboardLayout({ role }: { role: Role }) {
@@ -19,8 +20,12 @@ export default function DashboardLayout({ role }: { role: Role }) {
 
   const current = cfg.items.find(([, p]) => pathname.startsWith(`${cfg.base}/${p}`));
   const extra = Object.entries(EXTRA_TITLES).find(([p]) => pathname.endsWith("/" + p) || pathname.includes("/" + p + "/"));
-  const title = extra ? extra[1] : pathname.match(/\/zones-pricing\/edit-rule\//) ? "Edit Pricing Rule"
-    : pathname.endsWith("/reports/delivery-report") ? "Delivery Report" : current ? current[0] : "Dashboard";
+  const webhookDelivery = role === "MERCHANT" && pathname.startsWith(`${cfg.base}/webhooks/`);
+  const title = extra ? extra[1]
+    : pathname.match(/\/zones-pricing\/edit-rule\//) ? "Edit Pricing Rule"
+    : pathname.endsWith("/reports/delivery-report") ? "Delivery Report"
+    : webhookDelivery ? "Webhook Delivery"
+    : current ? current[0] : "Dashboard";
   const logout = () => {
     clearSession();
     nav("/login", { replace: true });
