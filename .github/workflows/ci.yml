@@ -1,0 +1,32 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [integration, main]
+  pull_request:
+    branches: [integration, main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Only TypeScript allowed (no .js / .jsx)
+        run: |
+          files=$(git ls-files '*.js' '*.jsx')
+          if [ -n "$files" ]; then
+            echo "These files must be converted to .ts / .tsx:"
+            echo "$files"
+            exit 1
+          fi
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - run: npm test
