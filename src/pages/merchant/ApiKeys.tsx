@@ -1,9 +1,35 @@
 import { useEffect, useState } from "react";
+import type { ChangeEvent } from "react";
 import { Button, Card, Modal } from "../../components/ui";
 import Field from "../../components/Field";
 import { generateCredential, listCredentials, revokeCredential } from "../../api/merchant";
 import type { ApiCredential, GeneratedCredential } from "../../api/merchant";
 import "./merchant.css";
+import "./apiKeys.css";
+
+const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? "/api";
+
+async function postJson(path: string, body: unknown, token?: string): Promise<Record<string, unknown>> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    body: JSON.stringify(body),
+  });
+  const text = await res.text();
+  let data: Record<string, unknown> = {};
+  try { data = text ? (JSON.parse(text) as Record<string, unknown>) : {}; } catch { data = { message: text }; }
+  if (!res.ok) throw new Error(String(data.message ?? data.error ?? `Request failed (${res.status})`));
+  return data;
+}
+
+function download(name: string, text: string) {
+  const url = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export default function ApiKeys() {
   const [creds, setCreds] = useState<ApiCredential[]>([]);
@@ -12,6 +38,40 @@ export default function ApiKeys() {
   const [revokeId, setRevokeId] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [copied, setCopied] = useState("");
+  const [tryIt, setTryIt] = useState({ clientId: "", clientSecret: "", recipientName: "Nimal Perera", dropoffAddress: "45 Lake Road, Kandy", weightKg: "2" });
+  const [tryBusy, setTryBusy] = useState(false);
+  const [tryResult, setTryResult] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const copy = async (label: string, value: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(label);
+      setTimeout(() => setCopied(""), 2000);
+    } catch {
+      setCopied("");
+    }
+  };
+
+  // Member 10: try the merchant API from the browser — get a token with the key, then create an order.
+  const runTry = async () => {
+    setTryBusy(true);
+    setTryResult(null);
+    try {
+      const auth = await postJson("/v1/merchant/auth/token", { clientId: tryIt.clientId.trim(), clientSecret: tryIt.clientSecret.trim() });
+      const token = String(auth.accessToken ?? auth.access_token ?? auth.token ?? "");
+      if (!token) throw new Error("No access token was returned.");
+      const order = await postJson("/v1/merchant/orders", {
+        recipientName: tryIt.recipientName.trim(), dropoffAddress: tryIt.dropoffAddress.trim(), weightKg: Number(tryIt.weightKg),
+      }, token);
+      const tracking = order.trackingNumber ? ` Tracking number: ${String(order.trackingNumber)}.` : "";
+      setTryResult({ ok: true, text: `Order created.${tracking} It now appears in Orders and is waiting for a courier.` });
+    } catch (e) {
+      setTryResult({ ok: false, text: (e as Error).message });
+    } finally {
+      setTryBusy(false);
+    }
+  };
 
   const load = () =>
     listCredentials()
@@ -26,7 +86,9 @@ export default function ApiKeys() {
   const generate = async () => {
     setBusy(true);
     try {
-      setNewKey(await generateCredential());
+      const created = await generateCredential();
+      setNewKey(created);
+      setTryIt((t) => ({ ...t, clientId: created.clientId, clientSecret: created.clientSecret }));
       await load();
     } catch (e) {
       setError((e as Error).message);
@@ -75,6 +137,21 @@ export default function ApiKeys() {
         </p>
       </Card>
 
+      <Card title="Try the API">
+        <p className="hint" style={{ marginTop: 0 }}>Create a real order with your key, the same way your shop's system would.</p>
+        <div className="ak-grid">
+          <Field label="Client ID" value={tryIt.clientId} onChange={(e: ChangeEvent<HTMLInputElement>) => setTryIt({ ...tryIt, clientId: e.target.value })} />
+          <Field label="Client secret" type="password" value={tryIt.clientSecret} onChange={(e: ChangeEvent<HTMLInputElement>) => setTryIt({ ...tryIt, clientSecret: e.target.value })} />
+          <Field label="Recipient name" value={tryIt.recipientName} onChange={(e: ChangeEvent<HTMLInputElement>) => setTryIt({ ...tryIt, recipientName: e.target.value })} />
+          <Field label="Drop-off address" value={tryIt.dropoffAddress} onChange={(e: ChangeEvent<HTMLInputElement>) => setTryIt({ ...tryIt, dropoffAddress: e.target.value })} />
+          <Field label="Weight (kg)" inputMode="decimal" value={tryIt.weightKg} onChange={(e: ChangeEvent<HTMLInputElement>) => setTryIt({ ...tryIt, weightKg: e.target.value })} />
+        </div>
+        <div style={{ marginTop: 12 }}>
+          <Button loading={tryBusy} disabled={!tryIt.clientId || !tryIt.clientSecret} onClick={() => void runTry()}>Create test order</Button>
+        </div>
+        {tryResult && <p className={`notice ${tryResult.ok ? "ok" : "error"}`} role="status" style={{ marginTop: 12 }}>{tryResult.text}</p>}
+      </Card>
+
       <Card title="API documentation">
         <h4>1. Get an access token</h4>
         <p className="hint" style={{ margin: 0 }}>POST /api/v1/merchant/auth/token</p>
@@ -98,13 +175,20 @@ Content-Type: application/json
         open={newKey !== null}
         title="Your new API key"
         onClose={() => setNewKey(null)}
-        footer={<Button onClick={() => setNewKey(null)}>Done</Button>}
+        footer={<Button onClick={() => setNewKey(null)}>I have saved it</Button>}
       >
         {newKey && (
           <>
             <Field label="Client ID" value={newKey.clientId} readOnly />
             <Field label="Client secret" value={newKey.clientSecret} readOnly />
-            <p className="hint">Copy the secret now. It will not be shown again.</p>
+            <div className="ak-actions">
+              <Button onClick={() => void copy("id", newKey.clientId)}>{copied === "id" ? "Copied ✓" : "Copy client ID"}</Button>
+              <Button onClick={() => void copy("secret", newKey.clientSecret)}>{copied === "secret" ? "Copied ✓" : "Copy secret"}</Button>
+              <Button onClick={() => download(`swiftdrop-api-key-${newKey.clientId}.txt`,
+                `SwiftDrop merchant API key\nClient ID: ${newKey.clientId}\nClient secret: ${newKey.clientSecret}\n\nKeep this file private.\n`)}>Download .txt</Button>
+            </div>
+            <p className="ak-warning">Save the secret now. For security it is stored only as a hash, so it can never be shown again.
+              It is also filled into “Try the API” below until you leave this page.</p>
           </>
         )}
       </Modal>

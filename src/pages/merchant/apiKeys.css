@@ -1,0 +1,3 @@
+.ak-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.ak-warning { margin: 12px 0 0; padding: 10px 12px; border-radius: 10px; background: #fff2c8; color: #824510; font-size: 13px; }
+.ak-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
