@@ -1,0 +1,27 @@
+.mp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; align-items: start; }
+.mp-card { background: #fff; border: 1px solid var(--line, #e4e7ec); border-radius: 14px; padding: 20px 22px; display: grid; gap: 14px; }
+.mp-card h2 { margin: 0; font-size: 18px; font-weight: 750; }
+.mp-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.mp-badge { border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 650; background: #edf0f5; color: #495568; }
+.mp-badge.approved { background: #dff4e8; color: #176743; }
+.mp-badge.pending { background: #fff2c8; color: #824510; }
+.mp-badge.rejected { background: #fde2e3; color: #9a2327; }
+.mp-list { margin: 0; display: grid; }
+.mp-list div { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #edf0f5; }
+.mp-list dt { color: var(--muted, #667085); }
+.mp-list dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
+.mp-hint { margin: 0; font-size: 13px; color: var(--muted, #667085); }
+.mp-field { display: grid; gap: 6px; font-size: 14px; font-weight: 600; }
+.mp-field input, .mp-field textarea {
+  width: 100%; box-sizing: border-box; border: 1px solid var(--line, #d0d5dd); border-radius: 10px;
+  padding: 10px 12px; font: inherit; font-weight: 400; resize: vertical;
+}
+.mp-field input:focus-visible, .mp-field textarea:focus-visible { outline: 2px solid var(--orange, #f97316); outline-offset: 1px; }
+.mp-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.mp-btn {
+  display: inline-flex; align-items: center; justify-content: center; height: 40px; padding: 0 16px; border-radius: 10px;
+  border: 1px solid var(--line, #d0d5dd); background: #fff; color: var(--ink, #101828); font: inherit; font-weight: 650;
+  text-decoration: none; cursor: pointer;
+}
+.mp-btn.primary { background: var(--orange, #f97316); border-color: var(--orange, #f97316); color: #fff; }
+.mp-btn:disabled { opacity: .6; cursor: default; }
