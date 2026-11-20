@@ -248,12 +248,13 @@ export default function CreateDelivery() {
               </fieldset>
               <fieldset>
                 <legend><span className="delivery-section-heading"><DeliveryIcon name="person" />Recipient</span></legend>
+                {/* Kept above the inputs so the phone number stays the last field before Review (keyboard order). */}
+                <RecipientAlertOptions value={alerts} onChange={setAlerts} />
                 <div className="delivery-two-fields">
                 <Field label="Recipient name" autoComplete="section-recipient name" {...field("recipientName")} />
                 <Field label="Recipient phone" type="tel" inputMode="tel" autoComplete="section-recipient tel-national" aria-describedby="delivery-phone-help" {...field("recipientPhone")} />
                 </div>
                 <p id="delivery-phone-help" className="hint">Use a local 10-digit number starting with 0, e.g. 0771234567.</p>
-                <RecipientAlertOptions value={alerts} onChange={setAlerts} />
               </fieldset>
               <Button type="submit" variant="primary" block>Review delivery details <DeliveryIcon name="arrow" /></Button>
               <p className="hint delivery-form-note">Reviewing does not place an order. Details are cleared if you leave or refresh this page.</p>
