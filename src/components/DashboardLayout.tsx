@@ -2,6 +2,7 @@ import { NavLink, Navigate, Outlet, useLocation, useNavigate } from "react-route
 import { NAV } from "../config/navigation";
 import { getUser, logout as signOut } from "../api/auth";
 import type { Role } from "../types";
+import AssistantWidget from "./assistant/AssistantWidget";
 
 const EXTRA_TITLES: Record<string, string> = {
   "profile/change-password": "Change Password",
@@ -54,7 +55,7 @@ export default function DashboardLayout({ role }: { role: Role }) {
         </header>
         <main className="content">
           <Outlet />
-        </main>
+        </main><AssistantWidget role={role} />
       </div>
     </div>
   );

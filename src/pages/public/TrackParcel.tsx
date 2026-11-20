@@ -4,9 +4,12 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button, StatusBadge } from "../../components/ui";
 import Timeline from "../../components/tracking/Timeline";
 import { trackPublic, NOT_FOUND_MESSAGE } from "../../api/tracking";
+import { getUser } from "../../api/auth";
+import { homePath } from "../../config/navigation";
 import { errMessage } from "../../utils/errors";
 import type { PublicTracking } from "../../types/tracking";
 import "../../components/tracking/tracking.css";
+import "./publicTrack.css";
 
 /** Public, mobile-first tracking page. Routes: /track and /track/:trackingNumber. No login. */
 export default function TrackParcel() {
@@ -38,10 +41,19 @@ export default function TrackParcel() {
   }
 
   const notFound = error === NOT_FOUND_MESSAGE;
+  const user = getUser();
 
   return (
     <div className="public-track">
-      <header className="public-bar"><Link to="/track">SwiftDrop</Link></header>
+      <header className="public-bar">
+        <Link to="/track">SwiftDrop</Link>
+        <nav className="public-nav" aria-label="SwiftDrop">
+          <Link to="/get-a-quote">Get a quote</Link>
+          {user
+            ? <Link className="primary" to={homePath(user.role)}>My dashboard</Link>
+            : <Link className="primary" to="/login">Log in</Link>}
+        </nav>
+      </header>
       <main className="public-body">
         <h1>Track your parcel</h1>
         <form className="public-search" onSubmit={submit} role="search">
@@ -50,6 +62,7 @@ export default function TrackParcel() {
             autoCapitalize="characters" spellCheck={false} maxLength={40} onChange={(e) => setInput(e.target.value)} />
           <Button type="submit" variant="primary" loading={busy}>Track</Button>
         </form>
+        <p className="public-hint">Your tracking number is on your receipt, for example SD-1A2B3C4D.</p>
 
         {error && (notFound ? (
           <div className="public-missing" role="alert">
@@ -66,6 +79,10 @@ export default function TrackParcel() {
             <span className="tracking-number">{result.trackingNumber}</span>
             <StatusBadge status={result.status} />
             <Timeline steps={result.timeline} />
+            <p className="public-more">
+              Sent this parcel? <Link to={user ? homePath(user.role) : "/login"}>{user ? "Open your dashboard" : "Log in"}</Link> to
+              see delivery details and follow the courier live.
+            </p>
           </section>
         )}
       </main>

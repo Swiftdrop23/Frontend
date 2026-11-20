@@ -1,0 +1,17 @@
+/* Self-contained so surrounding form styles (grid columns, label layouts) cannot squeeze it. */
+.sd-alert-box {
+  grid-column: 1 / -1; flex: 1 0 100%; width: 100%; min-width: 0; box-sizing: border-box;
+  display: flex; flex-direction: column; gap: 8px; margin: 4px 0 14px; padding: 12px 14px;
+  border: 1px solid #e2e8f0; border-radius: 12px; background: #fff;
+  writing-mode: horizontal-tb; text-align: left;
+}
+.sd-alert-box .sd-alert-box-title { margin: 0; font-size: 14px; font-weight: 650; white-space: normal; }
+.sd-alert-box label.sd-alert-box-option {
+  display: flex; flex-direction: row; align-items: center; gap: 10px; width: auto; margin: 0;
+  font-size: 14px; font-weight: 400; cursor: pointer; white-space: normal;
+}
+.sd-alert-box label.sd-alert-box-option input {
+  flex: 0 0 auto; width: 18px; height: 18px; margin: 0; accent-color: var(--orange, #f97316);
+}
+.sd-alert-box label.sd-alert-box-option span { flex: 1 1 auto; min-width: 0; }
+.sd-alert-box .sd-alert-box-note { margin: 0; font-size: 12px; color: #64748b; }

@@ -35,6 +35,10 @@
 .notification-list strong { font-size: 17px; }
 .notification-dot { width: 10px; height: 10px; margin-top: 5px; border-radius: 50%; background: #cbd0d8; }
 .notification-dot.unread { background: var(--orange); }
+.notification-link { display: block; color: inherit; text-decoration: none; border-radius: 8px; }
+.notification-link:hover strong { color: var(--orange); }
+.notification-cta { display: inline-block; margin-top: 4px; font-size: 14px; font-weight: 650; color: var(--orange); }
+.notification-link:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; }
 
 .endpoint-actions input { flex: 1 1 230px; min-width: 0; height: 42px; border: 1px solid var(--line); border-radius: 10px; padding: 0 12px; font: inherit; }
 .endpoint-actions input:focus-visible { outline: 2px solid var(--orange); }

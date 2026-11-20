@@ -1,13 +1,20 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { formatStatus, formatTime, notificationApi } from "../../api/notifications";
 import { useLiveResource } from "./useLiveResource";
 import "./notifications.css";
 
 export default function Notifications() {
   const live = useLiveResource(notificationApi.list);
+  // Customers can open a parcel's Live Tracking straight from its "Courier on the way" notification.
+  const isCustomer = useLocation().pathname.startsWith("/customer");
+  // The list is newest first, so the first row for a parcel is its latest update.
+  const latestId = new Map<string, string | number>();
+  for (const row of live.data ?? []) if (!latestId.has(row.trackingNumber)) latestId.set(row.trackingNumber, row.id);
   const updates = live.data?.map((row) => ({
       id: row.id, tracking: row.trackingNumber, title: formatStatus(row.status),
       time: formatTime(row.createdAt), read: row.read,
+      // Live tracking only while the courier is still coming: once a newer update arrives (picked up etc.) the link goes.
+      liveNow: row.status === "COURIER_ON_THE_WAY" && latestId.get(row.trackingNumber) === row.id,
     })) ?? [];
 
   return (
@@ -26,11 +33,16 @@ export default function Notifications() {
         {live.error ?? (live.data ? "No notifications yet." : "Loading notifications…")}
       </p>}
       {updates.length > 0 && <ul className="card notification-list">
-        {updates.map(({ id, title, tracking, time, read }) => (
+        {updates.map(({ id, title, tracking, time, read, liveNow }) => (
           <li key={id}>
             <span className={read ? "notification-dot" : "notification-dot unread"} role="img"
               aria-label={read ? "Read" : "Unread"} />
-            <div><strong>{title}</strong><div className="notification-muted">{tracking}</div></div>
+            {isCustomer && liveNow
+              ? <Link className="notification-link" to={`/customer/live-tracking?parcel=${encodeURIComponent(tracking)}`}>
+                  <strong>{title}</strong><div className="notification-muted">{tracking}</div>
+                  <span className="notification-cta">View live tracking →</span>
+                </Link>
+              : <div><strong>{title}</strong><div className="notification-muted">{tracking}</div></div>}
             <span className="notification-muted">{time}</span>
           </li>
         ))}

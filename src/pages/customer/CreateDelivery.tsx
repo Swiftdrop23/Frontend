@@ -11,6 +11,11 @@ import { requestDeliveryQuote, confirmDelivery, fieldErrors } from "../../api/de
 import DeliveryIcon from "../../components/delivery/DeliveryIcon";
 import DeliverySteps from "../../components/delivery/DeliverySteps";
 import "../../components/delivery/delivery.css";
+import PinField from "../../components/map/PinField";
+import "../../components/map/map.css";
+import { NO_ALERTS, saveAlertsQuietly, savePinsQuietly } from "../../api/liveMap";
+import type { ParcelPins, RecipientAlertSettings } from "../../api/liveMap";
+import RecipientAlertOptions from "../../components/map/RecipientAlertOptions";
 
 const initialDetails = {
   pickupAddress: "", dropoffAddress: "", weight: "", length: "", width: "", height: "",
@@ -35,6 +40,10 @@ function validate(details: Details) {
 
 export default function CreateDelivery() {
   const [details, setDetails] = useState(initialDetails);
+  // Optional exact locations pinned on the map (Member 10); saved after the delivery is confirmed.
+  const [pins, setPins] = useState<ParcelPins>({ pickup: null, dropoff: null });
+  // Optional SMS alerts to the recipient, chosen by the sender (Member 10).
+  const [alerts, setAlerts] = useState<RecipientAlertSettings>(NO_ALERTS);
   const [errors, setErrors] = useState<Partial<Record<keyof Details, string>>>({});
   const [step, setStep] = useState("details");
   const [quote, setQuote] = useState<DeliveryQuote | null>(null);
@@ -139,6 +148,8 @@ export default function CreateDelivery() {
     try {
       const result = await confirmDelivery(attempt.quoteId, attempt.recipient, attempt.fee);
       setReceipt(result); setUncertain(false);
+      void savePinsQuietly(result.trackingNumber, pins);
+      void saveAlertsQuietly(result.trackingNumber, alerts);
     } catch (caught) {
       const error = deliveryError(caught);
       if (error.code === "QUOTE_PRICE_CHANGED" && error.revisedQuote) {
@@ -177,6 +188,7 @@ export default function CreateDelivery() {
         <div><dt>Accepted fee</dt><dd>{receipt.fee.currency} {receipt.fee.amount}</dd></div>
       </dl>
       <p className="hint">Keep your tracking number for reference. This receipt records the creation of your delivery.</p>
+      <p className="hint">On the pickup day you will get a notification when your courier starts coming, and you can follow them live in Live Tracking.</p>
       <div className="delivery-actions">
         <a className="btn primary" href="/customer/create-delivery">Create another delivery <DeliveryIcon name="arrow" /></a>
         <a className="btn" href={`/customer/cancel-delivery?tracking=${encodeURIComponent(receipt.trackingNumber)}`}>Cancel this delivery</a>
@@ -205,12 +217,13 @@ export default function CreateDelivery() {
           {reviewing ? (
             <>
               <dl className="delivery-summary">
-                <div className="delivery-route-row"><dt><DeliveryIcon name="route" /> Pickup address</dt><dd>{details.pickupAddress.trim()}</dd></div>
-                <div className="delivery-route-row"><dt><DeliveryIcon name="route" /> Drop-off address</dt><dd>{details.dropoffAddress.trim()}</dd></div>
+                <div className="delivery-route-row"><dt><DeliveryIcon name="route" /> Pickup address</dt><dd>{details.pickupAddress.trim()}{pins.pickup ? " · 📍 pinned on map" : ""}</dd></div>
+                <div className="delivery-route-row"><dt><DeliveryIcon name="route" /> Drop-off address</dt><dd>{details.dropoffAddress.trim()}{pins.dropoff ? " · 📍 pinned on map" : ""}</dd></div>
                 <div><dt>Parcel weight</dt><dd>{details.weight} kg</dd></div>
                 <div><dt>Parcel size (length × width × height)</dt><dd>{details.length} × {details.width} × {details.height} cm</dd></div>
                 <div><dt>Recipient name</dt><dd>{details.recipientName.trim()}</dd></div>
                 <div><dt>Recipient phone</dt><dd>{details.recipientPhone.trim()}</dd></div>
+                <div><dt>SMS updates to the recipient</dt><dd>{[alerts.pickedUp && "Picked up", alerts.outForDelivery && "Out for delivery", alerts.delivered && "Delivered"].filter(Boolean).join(", ") || "None"}</dd></div>
               </dl>
               <p className="hint">These details are held only on this page. Leaving or refreshing clears them.</p>
               <Button type="button" block disabled={confirming || uncertain} onClick={editDetails}>Back to edit details</Button>
@@ -221,7 +234,9 @@ export default function CreateDelivery() {
               <fieldset>
                 <legend><span className="delivery-section-heading"><DeliveryIcon name="route" />Addresses</span></legend>
                 <Field label="Pickup address" {...field("pickupAddress")} placeholder="House or building, street, city, postal code" autoComplete="off" />
+                <PinField kind="pickup" address={details.pickupAddress} value={pins.pickup} onChange={(pickup) => setPins((current) => ({ ...current, pickup }))} />
                 <Field label="Drop-off address" {...field("dropoffAddress")} placeholder="House or building, street, city, postal code" autoComplete="off" />
+                <PinField kind="dropoff" address={details.dropoffAddress} value={pins.dropoff} onChange={(dropoff) => setPins((current) => ({ ...current, dropoff }))} />
               </fieldset>
               <fieldset>
                 <legend><span className="delivery-section-heading"><DeliveryIcon name="parcel" />Parcel details</span></legend>
@@ -233,6 +248,8 @@ export default function CreateDelivery() {
               </fieldset>
               <fieldset>
                 <legend><span className="delivery-section-heading"><DeliveryIcon name="person" />Recipient</span></legend>
+                {/* Kept above the inputs so the phone number stays the last field before Review (keyboard order). */}
+                <RecipientAlertOptions value={alerts} onChange={setAlerts} />
                 <div className="delivery-two-fields">
                 <Field label="Recipient name" autoComplete="section-recipient name" {...field("recipientName")} />
                 <Field label="Recipient phone" type="tel" inputMode="tel" autoComplete="section-recipient tel-national" aria-describedby="delivery-phone-help" {...field("recipientPhone")} />

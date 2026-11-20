@@ -1,7 +1,7 @@
 import CreateDelivery from "../pages/customer/CreateDelivery";
 import CancelDelivery from "../pages/customer/CancelDelivery";
 import RecoverDelivery from "../pages/customer/RecoverDelivery";
-import LiveTracking from "../pages/customer/LiveTracking";
+import LiveTrackingWithMap from "../pages/customer/LiveTrackingWithMap";
 import DeliveryHistory from "../pages/customer/DeliveryHistory";
 import DeliveryDetails from "../pages/customer/DeliveryDetails";
 import DeliveryReceipt from "../pages/customer/DeliveryReceipt";
@@ -16,7 +16,7 @@ export const customerRoutes: PageRoute[] = [
   { path: "create-delivery", element: <CreateDelivery /> },
   { path: "cancel-delivery", element: <CancelDelivery /> },
   { path: "recover-delivery", element: <RecoverDelivery /> },
-  { path: "live-tracking", element: <LiveTracking /> },
+  { path: "live-tracking", element: <LiveTrackingWithMap /> },
   { path: "delivery-history", element: <DeliveryHistory /> },
   { path: "delivery-history/:trackingNumber", element: <DeliveryDetails /> },
   { path: "delivery-history/:trackingNumber/receipt", element: <DeliveryReceipt /> },

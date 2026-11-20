@@ -1,0 +1,13 @@
+.public-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.public-nav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.public-nav a {
+  display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 10px;
+  border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  color: inherit; font-size: 14px; font-weight: 650; text-decoration: none;
+}
+.public-nav a:hover { border-color: currentColor; }
+.public-nav a.primary { background: var(--orange, #f97316); border-color: var(--orange, #f97316); color: #fff; }
+.public-nav a:focus-visible { outline: 2px solid var(--orange, #f97316); outline-offset: 2px; }
+.public-hint { margin: 8px 0 0; font-size: 14px; color: var(--muted, #667085); }
+.public-more { margin: 18px 0 0; font-size: 14px; color: var(--muted, #667085); }
+.public-more a { color: var(--orange, #f97316); font-weight: 650; }
