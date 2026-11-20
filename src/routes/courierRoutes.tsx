@@ -1,6 +1,6 @@
-import Placeholder from "../components/Placeholder";
 import CourierApp from "../features/courier/CourierApp";
 import CourierRouteMap from "../pages/courier/CourierRouteMap";
+import CourierNotifications from "../pages/courier/CourierNotifications";
 import { accountRoutes } from "./accountRoutes";
 import type { PageRoute } from "./pageRoute";
 
@@ -9,6 +9,6 @@ import type { PageRoute } from "./pageRoute";
 export const courierRoutes: PageRoute[] = [
   { path: "deliveries", element: <CourierApp embedded /> },
   { path: "route-map", element: <CourierRouteMap /> },
-  { path: "notifications", element: <Placeholder /> },
+  { path: "notifications", element: <CourierNotifications /> },
   ...accountRoutes("COURIER"),
 ];
