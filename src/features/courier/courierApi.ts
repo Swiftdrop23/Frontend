@@ -1,3 +1,4 @@
+import { freshToken } from '../../api/session';
 import { isComplete, validateUpdate } from './statusRules';
 import type { Delivery, StatusUpdate } from './types';
 
@@ -62,7 +63,7 @@ function read(): Delivery[] {
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const token = localStorage.getItem('token');
+  const token = await freshToken();
   const headers: Record<string, string> = {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...(options.headers as Record<string, string> | undefined),
