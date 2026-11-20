@@ -23,7 +23,7 @@ export default function DeliveryDetails() {
         <Card title="Details">
           <DetailList rows={[
             ["Tracking no.", parcel.trackingNumber],
-            ["Status", <StatusBadge status={parcel.status} />],
+            ["Status", <StatusBadge key="status" status={parcel.status} />],
             ["From", parcel.from],
             ["To", parcel.to],
             ["Recipient", parcel.recipientName],

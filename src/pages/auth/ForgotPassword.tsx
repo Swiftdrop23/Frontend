@@ -17,6 +17,7 @@ export default function ForgotPassword() {
   const [error, setError] = useState("");
   const [msg, setMsg] = useState<Message>({ type: "", text: "" });
   const [busy, setBusy] = useState(false);
+  const [resetToken, setResetToken] = useState("");
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -25,7 +26,8 @@ export default function ForgotPassword() {
     setError("");
     setBusy(true);
     try {
-      await forgotPassword(email.trim());
+      const result = await forgotPassword(email.trim());
+      setResetToken(result.resetToken ?? "");
       setMsg({ type: "ok", text: "If an account exists for this email, a reset link is on its way." });
     } catch (err) {
       setMsg({ type: "error", text: errMessage(err) });
@@ -37,6 +39,11 @@ export default function ForgotPassword() {
   return (
     <AuthLayout title="Forgot your password?" subtitle="Enter your email and we will send you a reset link.">
       {msg.text && <div className={`notice ${msg.type}`} role="alert">{msg.text}</div>}
+      {resetToken && (
+        <p className="hint">
+          Demo mode (no email server): <Link to={`/reset-password?token=${encodeURIComponent(resetToken)}`}>open your reset link</Link>.
+        </p>
+      )}
       <form onSubmit={submit} noValidate>
         <Field label="Email" type="email" placeholder="you@example.com" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} error={error} />
         <button className="btn primary" disabled={busy}>{busy ? "Sending..." : "Send reset link"}</button>

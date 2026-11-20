@@ -1,4 +1,5 @@
 import { request, isMock, wait } from "./http";
+import { freshToken } from "./session";
 import type { ParcelStatus } from "../types";
 import type { HistoryFilter, HistoryPage, ParcelDetails, PublicTracking, TimelineStep } from "../types/tracking";
 
@@ -107,7 +108,7 @@ export async function downloadReceiptPdf(trackingNumber: string): Promise<boolea
   const base = import.meta.env.VITE_API_URL;
   if (!base) return false;
   const tracking = normalise(trackingNumber);
-  const token = localStorage.getItem("token");
+  const token = await freshToken();
   let res: Response;
   try {
     res = await fetch(`${base}/v1/tracking/parcels/${encodeURIComponent(tracking)}/receipt.pdf`, {

@@ -1,4 +1,5 @@
 import type { ParcelStatus } from "../types";
+import { freshToken } from "./session";
 import type { Fee, DeliveryQuote, DeliveryReceipt, DeliveryEstimate, DeliveryState,
   DeliveryFields, EstimateFields, Recipient, DeliveryFieldErrors } from "../types/delivery";
 
@@ -59,7 +60,7 @@ interface RequestOptions { signal?: AbortSignal; authenticated?: boolean; method
 async function request(path: string, body: unknown, { signal, authenticated = true, method = "POST" }: RequestOptions = {}): Promise<unknown> {
   const base = import.meta.env.VITE_API_URL?.replace(/\/$/, "");
   if (!base) throw new DeliveryError(503, "SERVICE_UNAVAILABLE", "The delivery service is not configured.");
-  const token = localStorage.getItem("token");
+  const token = authenticated ? await freshToken() : null;
   let response: Response;
   try {
     response = await fetch(`${base}/v1/${path}`, {

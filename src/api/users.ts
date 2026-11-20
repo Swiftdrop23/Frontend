@@ -2,7 +2,8 @@ import { request, isMock, wait } from "./http";
 import { getUser } from "./auth";
 import type { Address, OkResponse, Profile } from "../types";
 
-// Mock data used until the backend is ready (VITE_API_URL not set).
+// Member 1 backend: /api/auth/me (profile), /api/auth/me/password, /api/auth/me/addresses.
+// Mock data is used until the backend is configured (VITE_API_URL not set).
 let profile: Profile | null = null;
 let addresses: Address[] = [
   { id: 1, label: "Home", address: "No. 12, Galle Road, Colombo 03" },
@@ -11,27 +12,27 @@ let addresses: Address[] = [
 let nextId = 3;
 
 export async function getProfile(): Promise<Profile> {
-  if (!isMock) return request<Profile>("GET", "/users/me");
+  if (!isMock) return request<Profile>("GET", "/auth/me");
   await wait(300);
   if (!profile) profile = { fullName: getUser()?.name || "Demo User", email: "demo@example.com", phone: "" };
   return { ...profile };
 }
 
 export async function updateProfile(data: Partial<Profile>): Promise<Profile> {
-  if (!isMock) return request<Profile>("PUT", "/users/me", data);
+  if (!isMock) return request<Profile>("PUT", "/auth/me", data);
   await wait(400);
   profile = { ...(profile ?? { fullName: "", email: "", phone: "" }), ...data };
   return { ...profile };
 }
 
 export async function changePassword(currentPassword: string, newPassword: string): Promise<OkResponse> {
-  if (!isMock) return request<OkResponse>("PUT", "/users/me/password", { currentPassword, newPassword });
+  if (!isMock) return request<OkResponse>("POST", "/auth/me/password", { currentPassword, newPassword });
   await wait(400);
   return { ok: true };
 }
 
 export async function listAddresses(): Promise<Address[]> {
-  if (!isMock) return request<Address[]>("GET", "/users/me/addresses");
+  if (!isMock) return request<Address[]>("GET", "/auth/me/addresses");
   await wait(300);
   return addresses.map((a) => ({ ...a }));
 }
@@ -39,8 +40,8 @@ export async function listAddresses(): Promise<Address[]> {
 export async function saveAddress(a: Address): Promise<Address> {
   if (!isMock) {
     return a.id
-      ? request<Address>("PUT", `/users/me/addresses/${a.id}`, a)
-      : request<Address>("POST", "/users/me/addresses", a);
+      ? request<Address>("PUT", `/auth/me/addresses/${a.id}`, a)
+      : request<Address>("POST", "/auth/me/addresses", a);
   }
   await wait(300);
   if (a.id) addresses = addresses.map((x) => (x.id === a.id ? { ...x, ...a } : x));
@@ -49,7 +50,10 @@ export async function saveAddress(a: Address): Promise<Address> {
 }
 
 export async function deleteAddress(id: number): Promise<OkResponse> {
-  if (!isMock) return request<OkResponse>("DELETE", `/users/me/addresses/${id}`);
+  if (!isMock) {
+    await request<unknown>("DELETE", `/auth/me/addresses/${id}`);
+    return { ok: true };
+  }
   await wait(300);
   addresses = addresses.filter((a) => a.id !== id);
   return { ok: true };

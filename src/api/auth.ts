@@ -1,4 +1,5 @@
 import type { OkResponse, Role, Session, User } from "../types";
+import { decodeClaims } from "./session";
 
 const API = import.meta.env.VITE_API_URL;
 const wait = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
@@ -54,7 +55,10 @@ function mockUser(email: string): User {
   return { name: "Demo User", role };
 }
 
-export const login = async (email: string, password: string) => {
+/** Login response from the backend (Member 1): an access token plus a refresh token. */
+export type LoginSession = Session & { refreshToken?: string; expiresIn?: number };
+
+export const login = async (email: string, password: string): Promise<LoginSession> => {
   if (!API) {
     await wait(500);
     if (email.toLowerCase().endsWith("@merchant.test")) {
@@ -67,24 +71,29 @@ export const login = async (email: string, password: string) => {
       } catch {
         // Use the mock pending status.
       }
-      if (status === "PENDING") throw new ApiError(403, "ඔබගේ අයදුම්පත සමාලෝචනය වෙමින් පවතී.");
-      if (status === "REJECTED") throw new ApiError(403, `ඔබගේ අයදුම්පත ප්‍රතික්ෂේප කරන ලදී.${rejectionReason ? ` Reason: ${rejectionReason}` : ""}`);
+      if (status === "PENDING") throw new ApiError(403, "Your merchant application is still being reviewed.");
+      if (status === "REJECTED") throw new ApiError(403, `Your merchant application was rejected.${rejectionReason ? ` Reason: ${rejectionReason}` : ""}`);
     }
   }
-  return post<Session>("/auth/login", { email, password }, { token: "dev-token", user: mockUser(email) });
+  return post<LoginSession>("/auth/login", { email, password }, { token: "dev-token", user: mockUser(email) });
 };
 export const registerCustomer = (data: Record<string, string>) =>
   post<OkResponse>("/auth/register/customer", data, { ok: true });
 export const registerMerchant = (data: Record<string, string>) =>
   post<OkResponse>("/auth/register/merchant", data, { ok: true });
+/** resetToken is only returned when the backend runs with SWIFTDROP_DEV_RESET_TOKENS=true (no mail server). */
 export const forgotPassword = (email: string) =>
-  post<OkResponse>("/auth/forgot-password", { email }, { ok: true });
+  post<OkResponse & { resetToken?: string }>("/auth/forgot-password", { email }, { ok: true });
 export const resetPassword = (token: string, password: string) =>
   post<OkResponse>("/auth/reset-password", { token, password }, { ok: true });
 
-export function saveSession({ token, user }: Session): void {
+export function saveSession({ token, user, refreshToken }: LoginSession): void {
   localStorage.setItem("token", token);
-  localStorage.setItem("user", JSON.stringify(user));
+  if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+  else localStorage.removeItem("refreshToken");
+  // Merchant accounts carry their merchants.id in the token ("mid"); the merchant dashboard needs it.
+  const mid = decodeClaims(token)?.mid;
+  localStorage.setItem("user", JSON.stringify(typeof mid === "number" ? { ...user, merchantId: mid } : user));
 }
 
 export function getUser(): User | null {
@@ -102,5 +111,23 @@ export function getUser(): User | null {
 
 export function clearSession(): void {
   localStorage.removeItem("token");
+  localStorage.removeItem("refreshToken");
   localStorage.removeItem("user");
+}
+
+/** Signs out on the server too, so the refresh token can no longer be used. */
+export async function logout(): Promise<void> {
+  const refreshToken = localStorage.getItem("refreshToken");
+  const token = localStorage.getItem("token");
+  clearSession();
+  if (!API || !token) return;
+  try {
+    await fetch(`${API}/auth/logout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ refreshToken }),
+    });
+  } catch {
+    // Already signed out locally; the refresh token simply expires on its own.
+  }
 }

@@ -1,6 +1,6 @@
 import { NavLink, Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { NAV } from "../config/navigation";
-import { clearSession, getUser } from "../api/auth";
+import { getUser, logout as signOut } from "../api/auth";
 import type { Role } from "../types";
 
 const EXTRA_TITLES: Record<string, string> = {
@@ -27,7 +27,7 @@ export default function DashboardLayout({ role }: { role: Role }) {
     : webhookDelivery ? "Webhook Delivery"
     : current ? current[0] : "Dashboard";
   const logout = () => {
-    clearSession();
+    void signOut();
     nav("/login", { replace: true });
   };
 
