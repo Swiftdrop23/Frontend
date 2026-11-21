@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import type { ChangeEvent } from "react";
 import { Button, Card, Modal } from "../../components/ui";
 import Field from "../../components/Field";
@@ -39,7 +40,8 @@ export default function ApiKeys() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState("");
-  const [tryIt, setTryIt] = useState({ clientId: "", clientSecret: "", recipientName: "Nimal Perera", dropoffAddress: "45 Lake Road, Kandy", weightKg: "2" });
+  const [showRevoked, setShowRevoked] = useState(false);
+  const [tryIt, setTryIt] = useState({ clientId: "", clientSecret: "", recipientName: "", dropoffAddress: "", weightKg: "2" });
   const [tryBusy, setTryBusy] = useState(false);
   const [tryResult, setTryResult] = useState<{ ok: boolean; text: string } | null>(null);
 
@@ -114,45 +116,79 @@ export default function ApiKeys() {
   if (error) return <div className="notice error">{error}</div>;
   if (loading) return <p className="hint">Loading credentials...</p>;
 
+  const active = creds.filter((c) => c.active);
+  const revoked = creds.filter((c) => !c.active);
+  const shown = showRevoked ? creds : active;
+  const formatDate = (iso: string) => {
+    const d = new Date(iso);
+    return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  };
+
   return (
-    <div className="stack">
-      <Card title="Your API keys">
-        {creds.length === 0 && <p className="hint">No API keys yet. Generate one to start.</p>}
-        {creds.map((c) => (
-          <div className="kv" key={c.id}>
-            <span>{c.clientId}</span>
-            <b>
-              {c.active ? "Active" : "Revoked"}{" "}
-              {c.active && (
-                <Button variant="danger" onClick={() => setRevokeId(c.id)}>Revoke</Button>
-              )}
-            </b>
+    <div className="stack ak-page">
+      <section className="ak-hero">
+        <h2>Connect your online shop</h2>
+        <p>If you sell online, your shop's system can book SwiftDrop deliveries by itself — no need to enter each parcel here.
+          It takes three steps:</p>
+        <ol className="ak-steps">
+          <li><b>Create a key</b><span>Your shop uses it to sign in to SwiftDrop, like a username and password.</span></li>
+          <li><b>Send orders</b><span>Each new shop order becomes a SwiftDrop delivery and appears in Orders.</span></li>
+          <li><b>Get delivery updates</b><span>We tell your shop when a parcel is picked up or delivered.</span></li>
+        </ol>
+      </section>
+
+      <Card title="Step 1 · Your keys">
+        <p className="hint" style={{ marginTop: 0 }}>Keep one active key. If a key is leaked, revoke it and create a new one.</p>
+        {shown.length === 0 && <p className="ak-empty">No active key yet. Create one to connect your shop.</p>}
+        {shown.map((c) => (
+          <div className="ak-key" key={c.id}>
+            <div>
+              <code>{c.clientId}</code>
+              {c.createdAt && <span className="ak-muted">Created {formatDate(c.createdAt)}</span>}
+            </div>
+            <div className="ak-key-actions">
+              <span className={`ak-pill ${c.active ? "on" : "off"}`}>{c.active ? "Active" : "Revoked"}</span>
+              {c.active && <Button variant="danger" onClick={() => setRevokeId(c.id)}>Revoke</Button>}
+            </div>
           </div>
         ))}
-        <div style={{ marginTop: 16 }}>
-          <Button loading={busy} onClick={generate}>Generate new key</Button>
+        <div className="ak-row">
+          <Button loading={busy} onClick={generate}>Create new key</Button>
+          {revoked.length > 0 && (
+            <button type="button" className="ak-link" onClick={() => setShowRevoked(!showRevoked)}>
+              {showRevoked ? "Hide revoked keys" : `Show revoked keys (${revoked.length})`}
+            </button>
+          )}
         </div>
-        <p className="hint" style={{ marginTop: 12 }}>
-          The client secret is shown only once when you generate a key. Store it safely.
-        </p>
       </Card>
 
-      <Card title="Try the API">
-        <p className="hint" style={{ marginTop: 0 }}>Create a real order with your key, the same way your shop's system would.</p>
+      <Card title="Step 2 · Send a test order">
+        <p className="hint" style={{ marginTop: 0 }}>See it work before connecting your shop. This creates a real order that a
+          dispatcher can assign to a courier. A key you just created is filled in for you; otherwise paste the Client ID and
+          secret you saved.</p>
         <div className="ak-grid">
           <Field label="Client ID" value={tryIt.clientId} onChange={(e: ChangeEvent<HTMLInputElement>) => setTryIt({ ...tryIt, clientId: e.target.value })} />
           <Field label="Client secret" type="password" value={tryIt.clientSecret} onChange={(e: ChangeEvent<HTMLInputElement>) => setTryIt({ ...tryIt, clientSecret: e.target.value })} />
-          <Field label="Recipient name" value={tryIt.recipientName} onChange={(e: ChangeEvent<HTMLInputElement>) => setTryIt({ ...tryIt, recipientName: e.target.value })} />
-          <Field label="Drop-off address" value={tryIt.dropoffAddress} onChange={(e: ChangeEvent<HTMLInputElement>) => setTryIt({ ...tryIt, dropoffAddress: e.target.value })} />
+          <Field label="Recipient name" placeholder="Kamal Silva" value={tryIt.recipientName} onChange={(e: ChangeEvent<HTMLInputElement>) => setTryIt({ ...tryIt, recipientName: e.target.value })} />
+          <Field label="Drop-off address" placeholder="12 Temple Road, Kandy" value={tryIt.dropoffAddress} onChange={(e: ChangeEvent<HTMLInputElement>) => setTryIt({ ...tryIt, dropoffAddress: e.target.value })} />
           <Field label="Weight (kg)" inputMode="decimal" value={tryIt.weightKg} onChange={(e: ChangeEvent<HTMLInputElement>) => setTryIt({ ...tryIt, weightKg: e.target.value })} />
         </div>
-        <div style={{ marginTop: 12 }}>
-          <Button loading={tryBusy} disabled={!tryIt.clientId || !tryIt.clientSecret} onClick={() => void runTry()}>Create test order</Button>
+        <div className="ak-row">
+          <Button variant="primary" loading={tryBusy} disabled={!tryIt.clientId || !tryIt.clientSecret || !tryIt.recipientName.trim() || !tryIt.dropoffAddress.trim()} onClick={() => void runTry()}>Send test order</Button>
+          {tryResult?.ok && <Link className="ak-link" to="/merchant/orders">Open Orders →</Link>}
+          <a className="ak-link" href="/demo-shop" target="_blank" rel="noreferrer">Or try it as a shopper in the Demo Mart shop ↗</a>
         </div>
         {tryResult && <p className={`notice ${tryResult.ok ? "ok" : "error"}`} role="status" style={{ marginTop: 12 }}>{tryResult.text}</p>}
       </Card>
 
-      <Card title="API documentation">
+      <Card title="Step 3 · Delivery updates">
+        <p className="hint" style={{ marginTop: 0 }}>Add your shop's web address on the Webhooks page. Every time a parcel's status
+          changes, SwiftDrop sends the new status there, so your customers see it in your shop too.</p>
+        <Link className="ak-btn" to="/merchant/webhooks">Set up delivery updates →</Link>
+      </Card>
+
+      <details className="ak-dev">
+        <summary>For developers: API reference</summary>
         <h4>1. Get an access token</h4>
         <p className="hint" style={{ margin: 0 }}>POST /api/v1/merchant/auth/token</p>
         <pre className="code">{`Content-Type: application/json
@@ -169,7 +205,7 @@ Content-Type: application/json
   "weightKg": 2 }`}</pre>
         <h4>Webhook events</h4>
         <p className="hint">parcel.status.changed is sent to your webhook URL whenever a parcel status changes.</p>
-      </Card>
+      </details>
 
       <Modal
         open={newKey !== null}

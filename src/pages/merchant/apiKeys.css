@@ -1,3 +1,25 @@
 .ak-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .ak-warning { margin: 12px 0 0; padding: 10px 12px; border-radius: 10px; background: #fff2c8; color: #824510; font-size: 13px; }
 .ak-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.ak-page { max-width: 1100px; }
+.ak-hero { background: linear-gradient(135deg, #101828, #1d2939); color: #fff; border-radius: 16px; padding: 22px 24px; }
+.ak-hero h2 { margin: 0 0 6px; font-size: 20px; }
+.ak-hero p { margin: 0; color: #d0d5dd; max-width: 760px; }
+.ak-steps { list-style: none; counter-reset: step; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 18px 0 0; padding: 0; }
+.ak-steps li { counter-increment: step; display: grid; gap: 4px; padding: 12px 14px 12px 50px; position: relative; border-radius: 12px; background: rgba(255,255,255,.07); }
+.ak-steps li::before { content: counter(step); position: absolute; left: 14px; top: 12px; width: 26px; height: 26px; border-radius: 50%; background: var(--orange, #f97316); color: #fff; font-weight: 700; display: grid; place-items: center; font-size: 14px; }
+.ak-steps span { color: #d0d5dd; font-size: 13px; }
+.ak-key { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid #edf0f5; flex-wrap: wrap; }
+.ak-key code { font-size: 14px; background: #f2f4f7; padding: 3px 8px; border-radius: 6px; }
+.ak-muted { display: block; margin-top: 4px; font-size: 12px; color: var(--muted, #667085); }
+.ak-key-actions { display: flex; align-items: center; gap: 10px; }
+.ak-pill { border-radius: 999px; padding: 3px 10px; font-size: 12px; font-weight: 650; }
+.ak-pill.on { background: #dff4e8; color: #176743; }
+.ak-pill.off { background: #edf0f5; color: #495568; }
+.ak-empty { margin: 8px 0; color: var(--muted, #667085); }
+.ak-row { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; margin-top: 14px; }
+.ak-link { background: none; border: 0; padding: 0; color: var(--orange, #f97316); font: inherit; font-weight: 650; cursor: pointer; text-decoration: none; }
+.ak-btn { display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 10px; background: var(--orange, #f97316); color: #fff; font-weight: 650; text-decoration: none; }
+.ak-dev { background: #fff; border: 1px solid var(--line, #e4e7ec); border-radius: 14px; padding: 14px 20px; }
+.ak-dev summary { cursor: pointer; font-weight: 650; }
+.ak-dev[open] summary { margin-bottom: 8px; }
