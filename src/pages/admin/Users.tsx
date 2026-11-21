@@ -8,6 +8,7 @@ import { getUser } from "../../api/auth";
 import { isEmail, isPhone, isStrong } from "../../utils/validate";
 import { errMessage } from "../../utils/errors";
 import type { Notice } from "../../types";
+import "./admin.css";
 
 const EMPTY: NewUser = { fullName: "", email: "", phone: "", password: "", role: "COURIER" };
 const ROLE_LABEL: Record<ManagedRole, string> = {
@@ -160,18 +161,22 @@ export default function Users() {
                       <td>{u.phone || "-"}</td>
                       <td>
                         {u.role === "MERCHANT" ? ROLE_LABEL.MERCHANT : (
-                          <select aria-label={`Role of ${u.fullName}`} value={u.role} disabled={busyId === u.id || self}
+                          <select className="admin-role-select" aria-label={`Role of ${u.fullName}`} value={u.role} disabled={busyId === u.id || self}
                             onChange={(e) => void updateRole(u, e.target.value as ManagedRole)}>
                             {STAFF_ROLES.map((r) => <option key={r} value={r}>{ROLE_LABEL[r]}</option>)}
                           </select>
                         )}
                       </td>
-                      <td>{u.enabled ? "Active" : u.status.charAt(0) + u.status.slice(1).toLowerCase()}</td>
+                      <td><span className={u.enabled ? "admin-state on" : "admin-state"}>{u.enabled ? "Active" : u.status.charAt(0) + u.status.slice(1).toLowerCase()}</span></td>
                       <td>
-                        <button type="button" className={`btn inline${u.enabled ? " danger" : ""}`} disabled={busyId === u.id || self}
-                          onClick={() => void toggle(u)}>
-                          {u.enabled ? "Disable" : "Enable"}
-                        </button>
+                        {u.role === "MERCHANT" ? (
+                          <a className="btn inline" href="/admin/merchant-approvals">Manage</a>
+                        ) : (
+                          <button type="button" className={`btn inline${u.enabled ? " danger" : ""}`} disabled={busyId === u.id || self}
+                            onClick={() => void toggle(u)}>
+                            {u.enabled ? "Disable" : "Enable"}
+                          </button>
+                        )}
                       </td>
                     </tr>
                   );

@@ -1,4 +1,3 @@
-import Placeholder from "../components/Placeholder";
 import FailedWebhooks from "../pages/notifications/FailedWebhooks";
 import { accountRoutes } from "./accountRoutes";
 import type { PageRoute } from "./pageRoute";
@@ -9,12 +8,10 @@ import Reports from "../pages/admin/Reports";
 import DeliveryReport from "../pages/admin/DeliveryReport";
 import MerchantApprovals from "../pages/admin/MerchantApprovals";
 import Users from "../pages/admin/Users";
+import AdminNotifications from "../pages/admin/AdminNotifications";
 
-// Admin pages. Put your page components in src/pages/admin/ and replace the matching <Placeholder />.
-// Extra pages that are not in the sidebar (e.g. "orders/:id") can be added to this list too.
+// Admin pages. Dispatch (unassigned parcels, courier workloads) belongs to the dispatcher, not the admin.
 export const adminRoutes: PageRoute[] = [
-  { path: "unassigned-parcels", element: <Placeholder /> },
-  { path: "courier-workloads", element: <Placeholder /> },
   { path: "users", element: <Users /> },
   { path: "merchant-approvals", element: <MerchantApprovals /> },
   { path: "zones-pricing", element: <ZonesPricing /> },
@@ -23,7 +20,7 @@ export const adminRoutes: PageRoute[] = [
   { path: "zones-pricing/edit-rule/:ruleId", element: <PricingRuleForm /> },
   { path: "reports", element: <Reports /> },
   { path: "reports/delivery-report", element: <DeliveryReport /> },
-  { path: "notifications", element: <Placeholder /> },
+  { path: "notifications", element: <AdminNotifications /> },
   { path: "failed-webhooks", element: <FailedWebhooks /> },
   ...accountRoutes("ADMIN"),
 ];

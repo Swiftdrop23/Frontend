@@ -22,14 +22,18 @@ describe("Demo Mart shop (Member 10)", () => {
     await renderShop();
     await userEvent.click(screen.getAllByRole("button", { name: "Buy" })[0]);
     await userEvent.type(screen.getByLabelText("Full name"), "Kamal Silva");
+    await userEvent.type(screen.getByLabelText("Email"), "kamal@example.com");
+    await userEvent.type(screen.getByLabelText(/Mobile number/), "0771234567");
     await userEvent.type(screen.getByLabelText("Delivery address"), "12 Temple Road, Kandy");
     await userEvent.click(screen.getByRole("button", { name: "Place order" }));
 
     expect(await screen.findByText("SD-ABC1234567")).toBeTruthy();
-    expect(screen.getByRole("link", { name: "Track your parcel" }).getAttribute("href")).toBe("/track/SD-ABC1234567");
+    expect(screen.getByText("We've emailed your order confirmation to kamal@example.com.")).toBeTruthy();
     const orderBody = JSON.parse(String(fetchMock.mock.calls[1][1].body));
     expect(orderBody.recipientName).toBe("Kamal Silva");
     expect(orderBody.weightKg).toBe(1.2);
+    expect(orderBody.recipientEmail).toBe("kamal@example.com");
+    expect(orderBody.recipientPhone).toBe("0771234567");
   });
 
   it("does not take orders while the shop has no key", async () => {
@@ -38,6 +42,7 @@ describe("Demo Mart shop (Member 10)", () => {
     await renderShop();
     await userEvent.click(screen.getAllByRole("button", { name: "Buy" })[0]);
     await userEvent.type(screen.getByLabelText("Full name"), "Kamal Silva");
+    await userEvent.type(screen.getByLabelText("Email"), "kamal@example.com");
     await userEvent.type(screen.getByLabelText("Delivery address"), "Kandy");
     await userEvent.click(screen.getByRole("button", { name: "Place order" }));
     expect(screen.getByRole("alert").textContent).toContain("can't take orders");

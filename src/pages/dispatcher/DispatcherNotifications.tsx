@@ -35,7 +35,7 @@ export default function DispatcherNotifications() {
         if (!active) return;
         const next: Alert[] = [
           ...waiting.map((p) => ({
-            key: `w-${p.id}`, title: "New parcel waiting for a courier", detail: `${p.trackingNumber} · ${p.routeSummary}`,
+            key: `w-${p.id}`, title: p.senderName ? `New parcel from ${p.senderName}` : "New parcel waiting for a courier", detail: `${p.trackingNumber} · ${p.routeSummary}`,
             at: p.createdAt, link: `/dispatcher/unassigned-parcels/${p.id}/assign`, action: "Assign a courier →",
           })),
           ...failed.map((p) => ({

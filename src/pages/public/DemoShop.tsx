@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Link } from "react-router-dom";
 import "./demoShop.css";
 
 /*
@@ -26,6 +25,7 @@ const PRODUCTS: Product[] = [
 ];
 
 const money = (n: number) => `LKR ${n.toLocaleString("en-LK")}`;
+
 
 async function postJson(path: string, body: unknown, token?: string): Promise<Record<string, unknown>> {
   const res = await fetch(`${API_BASE}${path}`, {
@@ -57,10 +57,10 @@ function Icon({ name, size = 22 }: { name: string; size?: number }) {
 export default function DemoShop() {
   const [step, setStep] = useState<"shop" | "checkout" | "placed">("shop");
   const [product, setProduct] = useState<Product>(PRODUCTS[0]);
-  const [form, setForm] = useState({ name: "", address: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", address: "" });
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const [placed, setPlaced] = useState<{ order: string; tracking: string; name: string } | null>(null);
+  const [placed, setPlaced] = useState<{ order: string; tracking: string; name: string; email: string } | null>(null);
   const key = SHOP_KEY;
   const connected = Boolean(key.clientId && key.clientSecret);
 
@@ -72,7 +72,8 @@ export default function DemoShop() {
 
   const placeOrder = async (event: FormEvent) => {
     event.preventDefault();
-    if (!form.name.trim() || !form.address.trim()) { setError("Enter your name and delivery address."); return; }
+    if (!form.name.trim() || !form.address.trim() || !form.email.trim()) { setError("Enter your name, email and delivery address."); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) { setError("Enter a valid email address."); return; }
     if (!connected) { setError("Sorry, this shop can't take orders right now. Please try again later."); return; }
     setBusy(true);
     setError("");
@@ -83,8 +84,10 @@ export default function DemoShop() {
       const orderNo = `DM-${Math.floor(1000 + Math.random() * 9000)}`;
       const order = await postJson("/v1/merchant/orders", {
         externalReference: orderNo, recipientName: form.name.trim(), dropoffAddress: form.address.trim(), weightKg: product.weightKg,
+        recipientEmail: form.email.trim(), recipientPhone: form.phone.trim() || undefined,
       }, token);
-      setPlaced({ order: orderNo, tracking: String(order.trackingNumber ?? ""), name: form.name.trim().split(/\s+/)[0] });
+      const tracking = String(order.trackingNumber ?? "");
+      setPlaced({ order: orderNo, tracking, name: form.name.trim().split(/\s+/)[0], email: form.email.trim() });
       setStep("placed");
     } catch (e) {
       setError(`We couldn't place your order: ${(e as Error).message}`);
@@ -93,7 +96,7 @@ export default function DemoShop() {
     }
   };
 
-  const restart = () => { setForm({ name: "", address: "" }); setPlaced(null); setStep("shop"); };
+  const restart = () => { setForm({ name: "", email: "", phone: "", address: "" }); setPlaced(null); setStep("shop"); };
 
   return (
     <div className="dm">
@@ -146,6 +149,12 @@ export default function DemoShop() {
               <label className="dm-field">Full name
                 <input value={form.name} placeholder="Kamal Silva" autoComplete="name" onChange={(e) => setForm({ ...form, name: e.target.value })} />
               </label>
+              <label className="dm-field">Email
+                <input type="email" value={form.email} placeholder="kamal@example.com" autoComplete="email" onChange={(e) => setForm({ ...form, email: e.target.value })} />
+              </label>
+              <label className="dm-field">Mobile number <span className="dm-optional">(optional, for the courier)</span>
+                <input type="tel" value={form.phone} placeholder="077 123 4567" autoComplete="tel" onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+              </label>
               <label className="dm-field">Delivery address
                 <input value={form.address} placeholder="12 Temple Road, Kandy" autoComplete="street-address" onChange={(e) => setForm({ ...form, address: e.target.value })} />
               </label>
@@ -161,7 +170,7 @@ export default function DemoShop() {
               <div className="dm-line"><span>{product.name} × 1</span><span>{money(product.price)}</span></div>
               <div className="dm-line dm-muted"><span>Delivery</span><span>SwiftDrop</span></div>
               <div className="dm-line dm-total"><span>Total</span><span>{money(product.price)}</span></div>
-              <p className="dm-hint">You'll get a SwiftDrop tracking number right away.</p>
+              <p className="dm-hint">You'll get a SwiftDrop tracking number right away, and an email at every delivery step.</p>
             </aside>
           </section>
         )}
@@ -173,6 +182,7 @@ export default function DemoShop() {
               <div>
                 <h1>Thanks, {placed.name}. Your order is placed</h1>
                 <p className="dm-muted">Order {placed.order} · {product.name}</p>
+                <p className="dm-muted">We've emailed your order confirmation to {placed.email}.</p>
               </div>
             </div>
             <div className="dm-tracking">
@@ -180,12 +190,11 @@ export default function DemoShop() {
                 <span className="dm-muted">SwiftDrop tracking number</span>
                 <strong>{placed.tracking || "Pending"}</strong>
               </div>
-              {placed.tracking && <Link className="dm-btn" to={`/track/${encodeURIComponent(placed.tracking)}`}>Track your parcel</Link>}
             </div>
             <ol className="dm-next">
-              <li>Demo Mart sent your order to SwiftDrop</li>
-              <li>A courier picks it up from the shop</li>
-              <li>Follow it live with the tracking number</li>
+              <li>Demo Mart packs your order and books delivery with SwiftDrop</li>
+              <li>A SwiftDrop courier picks it up from the shop</li>
+              <li>We email you at every step, with your full delivery progress</li>
             </ol>
             <button type="button" className="dm-btn ghost" onClick={restart}>Continue shopping</button>
           </section>
