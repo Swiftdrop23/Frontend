@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import type { ChangeEvent } from "react";
 import { Button, Card, Modal } from "../../components/ui";
 import Field from "../../components/Field";
+import type { FieldChange } from "../../components/Field";
 import { generateCredential, listCredentials, revokeCredential } from "../../api/merchant";
 import type { ApiCredential, GeneratedCredential } from "../../api/merchant";
 import "./merchant.css";
@@ -55,7 +56,7 @@ export default function ApiKeys() {
     }
   };
 
-  // Member 10: try the merchant API from the browser — get a token with the key, then create an order.
+  // Member 10: try the merchant API from the browser â€” get a token with the key, then create an order.
   const runTry = async () => {
     setTryBusy(true);
     setTryResult(null);
@@ -128,7 +129,7 @@ export default function ApiKeys() {
     <div className="stack ak-page">
       <section className="ak-hero">
         <h2>Connect your online shop</h2>
-        <p>If you sell online, your shop's system can book SwiftDrop deliveries by itself — no need to enter each parcel here.
+        <p>If you sell online, your shop's system can book SwiftDrop deliveries by itself â€” no need to enter each parcel here.
           It takes three steps:</p>
         <ol className="ak-steps">
           <li><b>Create a key</b><span>Your shop uses it to sign in to SwiftDrop, like a username and password.</span></li>
@@ -137,7 +138,7 @@ export default function ApiKeys() {
         </ol>
       </section>
 
-      <Card title="Step 1 · Your keys">
+      <Card title="Step 1 Â· Your keys">
         <p className="hint" style={{ marginTop: 0 }}>Keep one active key. If a key is leaked, revoke it and create a new one.</p>
         {shown.length === 0 && <p className="ak-empty">No active key yet. Create one to connect your shop.</p>}
         {shown.map((c) => (
@@ -162,29 +163,29 @@ export default function ApiKeys() {
         </div>
       </Card>
 
-      <Card title="Step 2 · Send a test order">
+      <Card title="Step 2 Â· Send a test order">
         <p className="hint" style={{ marginTop: 0 }}>See it work before connecting your shop. This creates a real order that a
           dispatcher can assign to a courier. A key you just created is filled in for you; otherwise paste the Client ID and
           secret you saved.</p>
         <div className="ak-grid">
-          <Field label="Client ID" value={tryIt.clientId} onChange={(e: ChangeEvent<HTMLInputElement>) => setTryIt({ ...tryIt, clientId: e.target.value })} />
-          <Field label="Client secret" type="password" value={tryIt.clientSecret} onChange={(e: ChangeEvent<HTMLInputElement>) => setTryIt({ ...tryIt, clientSecret: e.target.value })} />
-          <Field label="Recipient name" placeholder="Kamal Silva" value={tryIt.recipientName} onChange={(e: ChangeEvent<HTMLInputElement>) => setTryIt({ ...tryIt, recipientName: e.target.value })} />
-          <Field label="Drop-off address" placeholder="12 Temple Road, Kandy" value={tryIt.dropoffAddress} onChange={(e: ChangeEvent<HTMLInputElement>) => setTryIt({ ...tryIt, dropoffAddress: e.target.value })} />
-          <Field label="Weight (kg)" inputMode="decimal" value={tryIt.weightKg} onChange={(e: ChangeEvent<HTMLInputElement>) => setTryIt({ ...tryIt, weightKg: e.target.value })} />
+          <Field label="Client ID" value={tryIt.clientId} onChange={(e: FieldChange) => setTryIt({ ...tryIt, clientId: e.target.value })} />
+          <Field label="Client secret" type="password" value={tryIt.clientSecret} onChange={(e: FieldChange) => setTryIt({ ...tryIt, clientSecret: e.target.value })} />
+          <Field label="Recipient name" placeholder="Kamal Silva" value={tryIt.recipientName} onChange={(e: FieldChange) => setTryIt({ ...tryIt, recipientName: e.target.value })} />
+          <Field label="Drop-off address" placeholder="12 Temple Road, Kandy" value={tryIt.dropoffAddress} onChange={(e: FieldChange) => setTryIt({ ...tryIt, dropoffAddress: e.target.value })} />
+          <Field label="Weight (kg)" inputMode="decimal" value={tryIt.weightKg} onChange={(e: FieldChange) => setTryIt({ ...tryIt, weightKg: e.target.value })} />
         </div>
         <div className="ak-row">
           <Button variant="primary" loading={tryBusy} disabled={!tryIt.clientId || !tryIt.clientSecret || !tryIt.recipientName.trim() || !tryIt.dropoffAddress.trim()} onClick={() => void runTry()}>Send test order</Button>
-          {tryResult?.ok && <Link className="ak-link" to="/merchant/orders">Open Orders →</Link>}
-          <a className="ak-link" href="/demo-shop" target="_blank" rel="noreferrer">Or try it as a shopper in the Demo Mart shop ↗</a>
+          {tryResult?.ok && <Link className="ak-link" to="/merchant/orders">Open Orders â†’</Link>}
+          <a className="ak-link" href="/demo-shop" target="_blank" rel="noreferrer">Or try it as a shopper in the Demo Mart shop â†—</a>
         </div>
         {tryResult && <p className={`notice ${tryResult.ok ? "ok" : "error"}`} role="status" style={{ marginTop: 12 }}>{tryResult.text}</p>}
       </Card>
 
-      <Card title="Step 3 · Delivery updates">
+      <Card title="Step 3 Â· Delivery updates">
         <p className="hint" style={{ marginTop: 0 }}>Add your shop's web address on the Webhooks page. Every time a parcel's status
           changes, SwiftDrop sends the new status there, so your customers see it in your shop too.</p>
-        <Link className="ak-btn" to="/merchant/webhooks">Set up delivery updates →</Link>
+        <Link className="ak-btn" to="/merchant/webhooks">Set up delivery updates â†’</Link>
       </Card>
 
       <details className="ak-dev">
@@ -218,13 +219,13 @@ Content-Type: application/json
             <Field label="Client ID" value={newKey.clientId} readOnly />
             <Field label="Client secret" value={newKey.clientSecret} readOnly />
             <div className="ak-actions">
-              <Button onClick={() => void copy("id", newKey.clientId)}>{copied === "id" ? "Copied ✓" : "Copy client ID"}</Button>
-              <Button onClick={() => void copy("secret", newKey.clientSecret)}>{copied === "secret" ? "Copied ✓" : "Copy secret"}</Button>
+              <Button onClick={() => void copy("id", newKey.clientId)}>{copied === "id" ? "Copied âœ“" : "Copy client ID"}</Button>
+              <Button onClick={() => void copy("secret", newKey.clientSecret)}>{copied === "secret" ? "Copied âœ“" : "Copy secret"}</Button>
               <Button onClick={() => download(`swiftdrop-api-key-${newKey.clientId}.txt`,
                 `SwiftDrop merchant API key\nClient ID: ${newKey.clientId}\nClient secret: ${newKey.clientSecret}\n\nKeep this file private.\n`)}>Download .txt</Button>
             </div>
             <p className="ak-warning">Save the secret now. For security it is stored only as a hash, so it can never be shown again.
-              It is also filled into “Try the API” below until you leave this page.</p>
+              It is also filled into â€œTry the APIâ€ below until you leave this page.</p>
           </>
         )}
       </Modal>
