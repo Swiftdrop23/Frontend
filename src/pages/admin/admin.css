@@ -72,3 +72,27 @@
 .merchant-rejection textarea { width: 100%; min-height: 90px; resize: vertical; margin-top: 8px; border: 1px solid #cbd1df; border-radius: 10px; padding: 10px 12px; font: inherit; }
 .merchant-rejection .err { display: block; margin-top: 6px; }
 @media (max-width: 700px) { .merchant-detail dl { grid-template-columns: 1fr; } }
+
+/* Member 10: users table controls, report breakdown, admin notifications */
+.admin-role-select { min-height: 36px; border: 1px solid #cbd1df; border-radius: 10px; padding: 0 30px 0 10px; background: #fff; color: var(--ink); font: inherit; font-size: 14px; cursor: pointer; }
+.admin-role-select:focus { outline: 2px solid var(--orange); border-color: var(--orange); }
+.admin-role-select:disabled { background: #f4f5f8; color: #98a2b3; cursor: default; }
+.admin-state { display: inline-block; border-radius: 999px; padding: 3px 10px; font-size: 13px; font-weight: 600; background: #fde5e6; color: #b4232e; }
+.admin-state.on { background: #def5e8; color: #18734e; }
+.report-stats.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.report-breakdown { display: flex; height: 19px; overflow: hidden; border-radius: 99px; background: #e2e7f0; }
+.report-breakdown > span { display: block; height: 100%; }
+.report-breakdown .seg-delivered { background: #18a058; }
+.report-breakdown .seg-progress { background: var(--orange); }
+.report-breakdown .seg-failed { background: #d92d20; }
+.report-legend { display: grid; gap: 10px; margin-top: 18px; }
+.report-legend div { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: #4f586b; }
+.report-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
+.report-legend b { color: var(--ink); }
+.admin-alerts { list-style: none; margin: 0; padding: 0; }
+.admin-alerts li { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; padding: 16px 0; border-bottom: 1px solid #edf0f5; }
+.admin-alerts li:last-child { border-bottom: 0; }
+.admin-alert-count { display: inline-grid; place-items: center; min-width: 40px; height: 40px; padding: 0 8px; border-radius: 12px; font-weight: 750; font-size: 18px; background: #edf0f5; color: #495568; }
+.admin-alert-count.hot { background: #fff1e6; color: #c2410c; }
+.admin-alerts strong { display: block; }
+@media (max-width: 900px) { .report-stats.four { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

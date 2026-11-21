@@ -2,6 +2,13 @@ import { useEffect, useState } from "react";
 import { getDeliveryReport, type DeliveryRow } from "./adminData";
 import "./admin.css";
 
+/** Parcels still on their way are "in progress"; the success rate counts finished parcels only. */
+export function rowStats(row: DeliveryRow) {
+  const inProgress = Math.max(0, row.total - row.delivered - row.failed);
+  const finished = row.delivered + row.failed;
+  return { inProgress, rate: finished ? `${Math.round((row.delivered / finished) * 100)}%` : "–" };
+}
+
 export default function DeliveryReport() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -17,7 +24,7 @@ export default function DeliveryReport() {
   }, [from, to, status]);
 
   function exportCsv() {
-    const values = [["Date", "Total", "Delivered", "Failed / cancelled", "Success rate"], ...rows.map((row) => [row.date, row.total, row.delivered, row.failed, `${row.total ? Math.round((row.delivered / row.total) * 100) : 0}%`])];
+    const values = [["Date", "Total", "Delivered", "In progress", "Failed / cancelled", "Success rate"], ...rows.map((row) => [row.date, row.total, row.delivered, rowStats(row).inProgress, row.failed, rowStats(row).rate])];
     const csv = values.map((line) => line.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(",")).join("\r\n");
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
     const link = document.createElement("a");
@@ -34,10 +41,10 @@ export default function DeliveryReport() {
     </div>
     {error && <p className="admin-error" role="alert">{error}</p>}
     {loading && <p className="admin-muted" role="status">Loading report data…</p>}
-    <section className="admin-panel report-table-panel"><div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Date</th><th>Total</th><th>Delivered</th><th>Failed / cancelled</th><th>Success rate</th></tr></thead><tbody>
-      {!loading && rows.map((row) => <tr key={row.date}><td>{new Intl.DateTimeFormat("en", { month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${row.date}T12:00:00Z`))}</td><td>{row.total}</td><td>{row.delivered}</td><td>{row.failed}</td><td>{row.total ? `${Math.round((row.delivered / row.total) * 100)}%` : "0%"}</td></tr>)}
-      {!loading && !rows.length && <tr><td className="admin-empty" colSpan={5}>No report rows match these filters.</td></tr>}
+    <section className="admin-panel report-table-panel"><div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Date</th><th>Total</th><th>Delivered</th><th>In progress</th><th>Failed / cancelled</th><th>Success rate</th></tr></thead><tbody>
+      {!loading && rows.map((row) => <tr key={row.date}><td>{new Intl.DateTimeFormat("en", { month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${row.date}T12:00:00Z`))}</td><td>{row.total}</td><td>{row.delivered}</td><td>{rowStats(row).inProgress}</td><td>{row.failed}</td><td>{rowStats(row).rate}</td></tr>)}
+      {!loading && !rows.length && <tr><td className="admin-empty" colSpan={6}>No report rows match these filters.</td></tr>}
     </tbody></table></div></section>
-    <p className="admin-sample">Failed counts include cancelled parcels because the current status model has no separate Failed status.</p>
+    <p className="admin-sample">"In progress" parcels are still on their way. The success rate counts finished parcels only (delivered vs failed or cancelled).</p>
   </div>;
 }

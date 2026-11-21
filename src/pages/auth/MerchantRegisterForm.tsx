@@ -96,7 +96,7 @@ export default function MerchantRegisterForm() {
     return (
       <AuthLayout title="Application submitted">
         <div className="notice ok" role="status">
-          ඔබගේ අයදුම්පත සම්පූර්ණයි. Admin approval බලාගෙන ඉන්න.
+          Your application has been submitted. You can log in once an admin approves it.
         </div>
         <button
           type="button"

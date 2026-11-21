@@ -134,7 +134,7 @@ export default function MerchantApprovals() {
             columns={columns}
             rows={applications}
             rowKey={(application) => application.id}
-            emptyMessage={status === "PENDING" ? "Pending applications නැහැ" : `No ${status.toLowerCase()} applications.`}
+            emptyMessage={status === "PENDING" ? "No pending applications." : `No ${status.toLowerCase()} applications.`}
           />
         )}
       </Card>

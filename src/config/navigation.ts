@@ -7,7 +7,7 @@ export interface NavConfig {
   items: NavItem[];
 }
 
-const common: NavItem[] = [["Notifications", "notifications"], ["Profile", "profile"]];
+const common: NavItem[] = [["Profile", "profile"]];
 
 export const NAV: Record<Role, NavConfig> = {
   CUSTOMER: { base: "/customer", items: [["Create Delivery", "create-delivery"], ["Live Tracking", "live-tracking"], ["Delivery History", "delivery-history"], ["Cancel Delivery", "cancel-delivery"], ...common] },
@@ -16,7 +16,7 @@ export const NAV: Record<Role, NavConfig> = {
   DISPATCHER: { base: "/dispatcher", items: [["Unassigned Parcels", "unassigned-parcels"], ["Courier Workloads", "courier-workloads"], ...common] },
   ADMIN: {
     base: "/admin",
-    items: [["Zones & Pricing", "zones-pricing"], ["Reports", "reports"], ["Unassigned Parcels", "unassigned-parcels"], ["Courier Workloads", "courier-workloads"], ["Users", "users"], ["Merchant Approvals", "merchant-approvals"], ["Failed Webhooks", "failed-webhooks"], ...common],
+    items: [["Zones & Pricing", "zones-pricing"], ["Reports", "reports"], ["Users", "users"], ["Merchant Approvals", "merchant-approvals"], ["Failed Webhooks", "failed-webhooks"], ...common],
   },
 };
 

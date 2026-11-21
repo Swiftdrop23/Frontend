@@ -37,3 +37,6 @@ test-results/
 preview-fixtures/
 *.dump
 *.bak
+
+# local context dumps
+*-context.txt

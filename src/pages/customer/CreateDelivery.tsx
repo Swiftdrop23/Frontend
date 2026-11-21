@@ -223,7 +223,7 @@ export default function CreateDelivery() {
                 <div><dt>Parcel size (length × width × height)</dt><dd>{details.length} × {details.width} × {details.height} cm</dd></div>
                 <div><dt>Recipient name</dt><dd>{details.recipientName.trim()}</dd></div>
                 <div><dt>Recipient phone</dt><dd>{details.recipientPhone.trim()}</dd></div>
-                <div><dt>SMS updates to the recipient</dt><dd>{[alerts.pickedUp && "Picked up", alerts.outForDelivery && "Out for delivery", alerts.delivered && "Delivered"].filter(Boolean).join(", ") || "None"}</dd></div>
+                <div><dt>Email updates to the recipient</dt><dd>{[alerts.pickedUp && "Picked up", alerts.outForDelivery && "Out for delivery", alerts.delivered && "Delivered"].filter(Boolean).join(", ") || "None"}</dd></div>
               </dl>
               <p className="hint">These details are held only on this page. Leaving or refreshing clears them.</p>
               <Button type="button" block disabled={confirming || uncertain} onClick={editDetails}>Back to edit details</Button>

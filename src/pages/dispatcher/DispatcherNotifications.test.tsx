@@ -5,7 +5,7 @@ import DispatcherNotifications from "./DispatcherNotifications";
 
 vi.mock("../../api/dispatcher", () => ({
   getUnassignedParcels: vi.fn(async () => [{
-    id: 41, trackingNumber: "SD-4B851D21", senderName: "A", receiverName: "B", receiverAddress: "Colombo",
+    id: 41, trackingNumber: "SD-4B851D21", senderName: "Demo Mart", receiverName: "B", receiverAddress: "Colombo",
     routeSummary: "Colombo → Colombo", weightLabel: "1 kg", zoneLabel: "Colombo", status: "CREATED",
     createdAt: "2026-11-20T10:00:00Z",
   }]),
@@ -17,9 +17,9 @@ vi.mock("../../api/dispatcher", () => ({
 }));
 
 describe("Dispatcher notifications (Member 10)", () => {
-  it("lists parcels waiting for a courier and failed deliveries", async () => {
+  it("lists new parcels with the sender name and failed deliveries", async () => {
     render(<MemoryRouter><DispatcherNotifications /></MemoryRouter>);
-    const waiting = await screen.findByText("New parcel waiting for a courier");
+    const waiting = await screen.findByText("New parcel from Demo Mart");
     expect(waiting.closest("a")?.getAttribute("href")).toBe("/dispatcher/unassigned-parcels/41/assign");
     expect(screen.getByText("Delivery failed")).toBeTruthy();
     expect(screen.getByText(/SD-FAILED01 · Kandy · Demo Courier/)).toBeTruthy();
