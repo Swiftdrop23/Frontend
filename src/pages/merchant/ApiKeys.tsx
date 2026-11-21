@@ -144,7 +144,6 @@ export default function ApiKeys() {
         ))}
         <div className="ak-row">
           <Button loading={busy} onClick={generate}>Create new connection</Button>
-          <a className="ak-link" href="/demo-shop" target="_blank" rel="noreferrer">See an example shop (Demo Mart)</a>
           {revoked.length > 0 && (
             <button type="button" className="ak-link" onClick={() => setShowRevoked(!showRevoked)}>
               {showRevoked ? "Hide disabled connections" : `Show disabled connections (${revoked.length})`}
