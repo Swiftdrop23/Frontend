@@ -7,7 +7,7 @@ export interface NavConfig {
   items: NavItem[];
 }
 
-const common: NavItem[] = [["Notifications", "notifications"], ["Profile", "profile"]];
+const common: NavItem[] = [["Profile", "profile"]];
 
 export const NAV: Record<Role, NavConfig> = {
   CUSTOMER: { base: "/customer", items: [["Create Delivery", "create-delivery"], ["Live Tracking", "live-tracking"], ["Delivery History", "delivery-history"], ["Cancel Delivery", "cancel-delivery"], ...common] },

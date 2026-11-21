@@ -50,6 +50,8 @@ export interface RecipientAlertSettings {
   pickedUp: boolean;
   outForDelivery: boolean;
   delivered: boolean;
+  /** Recipient's email for the status emails (Member 10). Only used when a box is ticked. */
+  email?: string;
 }
 
 export interface RecipientAlertsView {
@@ -58,7 +60,7 @@ export interface RecipientAlertsView {
   sent: { status: string; message: string; result: "SENT" | "LOGGED" | "FAILED"; createdAt: string }[];
 }
 
-export const NO_ALERTS: RecipientAlertSettings = { pickedUp: false, outForDelivery: false, delivered: false };
+export const NO_ALERTS: RecipientAlertSettings = { pickedUp: false, outForDelivery: false, delivered: false, email: "" };
 
 export const VEHICLE_TYPES = ["Motorbike", "Three-wheeler", "Car", "Van", "Lorry", "Bicycle"] as const;
 
@@ -93,9 +95,12 @@ export async function savePinsQuietly(trackingNumber: string, pins: ParcelPins):
   }
 }
 
-/** Saves the recipient SMS choices of a new delivery; only called when at least one box is ticked. */
+export const isEmail = (value: string | undefined): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((value ?? "").trim());
+
+/** Saves the recipient email choices of a new delivery; only when a box is ticked and the email is valid. */
 export async function saveAlertsQuietly(trackingNumber: string, settings: RecipientAlertSettings): Promise<void> {
   if (!settings.pickedUp && !settings.outForDelivery && !settings.delivered) return;
+  if (!isEmail(settings.email)) return;
   try {
     await liveMapApi.saveRecipientAlerts(trackingNumber, settings);
   } catch {

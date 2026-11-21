@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import Field from "../../components/Field";
 import type { FieldChange } from "../../components/Field";
 import { getAdminProfile } from "../../api/adminAccount";
+import { liveMapApi, VEHICLE_TYPES } from "../../api/liveMap";
+import type { CourierProfile } from "../../api/liveMap";
 import { getProfile, updateProfile, listAddresses, saveAddress, deleteAddress } from "../../api/users";
 import { isPhone } from "../../utils/validate";
 import { errMessage } from "../../utils/errors";
@@ -159,14 +161,91 @@ function SavedAddresses() {
   );
 }
 
+/** Member 10: the courier's vehicle (shown to customers while the courier is on the way to a pickup). */
+function CourierVehicle() {
+  const [profile, setProfile] = useState<CourierProfile | null>(null);
+  const [form, setForm] = useState({ phone: "", vehicleType: "", vehicleNumber: "" });
+  const [editing, setEditing] = useState(false);
+  const [msg, setMsg] = useState<Notice | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    liveMapApi.profile().then((p) => {
+      setProfile(p);
+      setForm({ phone: p.phone ?? "", vehicleType: p.vehicleType ?? "", vehicleNumber: p.vehicleNumber ?? "" });
+      if (!p.vehicleType || !p.vehicleNumber) setEditing(true);
+    }).catch((e) => setMsg({ type: "error", text: errMessage(e) }));
+  }, []);
+
+  async function save(e: FormEvent) {
+    e.preventDefault();
+    if (!form.vehicleType || !form.vehicleNumber.trim()) {
+      setMsg({ type: "error", text: "Choose the vehicle type and enter the vehicle number." });
+      return;
+    }
+    setBusy(true);
+    setMsg(null);
+    try {
+      const saved = await liveMapApi.saveProfile({ ...form, vehicleNumber: form.vehicleNumber.trim().toUpperCase(), phone: form.phone.trim() });
+      setProfile(saved);
+      setEditing(false);
+      setMsg({ type: "ok", text: "Vehicle saved. Customers see these details when you are on the way." });
+    } catch (err) {
+      setMsg({ type: "error", text: errMessage(err) });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section className="card">
+      <h3>My vehicle</h3>
+      {msg && <div className={`notice ${msg.type}`} role="alert">{msg.text}</div>}
+      {!editing && profile && (
+        <>
+          <div className="vehicle-summary">
+            <span className="vehicle-plate">{profile.vehicleNumber ?? "No number"}</span>
+            <span className="vehicle-type">{profile.vehicleType ?? "Vehicle not added"}</span>
+          </div>
+          <dl className="profile-details">
+            <dt>Vehicle type</dt><dd>{profile.vehicleType ?? "Not added"}</dd>
+            <dt>Vehicle number</dt><dd>{profile.vehicleNumber ?? "Not added"}</dd>
+            <dt>Contact phone</dt><dd>{profile.phone ?? "Not added"}</dd>
+          </dl>
+          <p className="hint">Customers see your name, vehicle and phone while you are on the way to pick up their parcel.</p>
+          <div className="row">
+            <button type="button" className="btn inline" onClick={() => setEditing(true)}>Edit vehicle</button>
+          </div>
+        </>
+      )}
+      {editing && (
+        <form onSubmit={save} noValidate>
+          <Field select label="Vehicle type" name="vehicleType" value={form.vehicleType} onChange={(e) => setForm({ ...form, vehicleType: e.target.value })}>
+            <option value="">Choose…</option>
+            {VEHICLE_TYPES.map((v) => <option key={v} value={v}>{v}</option>)}
+          </Field>
+          <Field label="Vehicle number" name="vehicleNumber" placeholder="BAB-1234" value={form.vehicleNumber} onChange={(e) => setForm({ ...form, vehicleNumber: e.target.value })} />
+          <Field label="Contact phone" name="phone" type="tel" placeholder="0771234567" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+          <div className="row">
+            <button className="btn primary inline" disabled={busy}>{busy ? "Saving..." : "Save vehicle"}</button>
+            {profile?.vehicleType && <button type="button" className="btn inline" onClick={() => setEditing(false)}>Cancel</button>}
+          </div>
+        </form>
+      )}
+      {!editing && !profile && !msg && <p className="hint" role="status">Loading vehicle…</p>}
+    </section>
+  );
+}
+
 // Saved addresses are for customers only. Merchants use the Business Profile page (Member 4).
 export default function Profile({ role }: { role: Role }) {
   if (role === "ADMIN") return <AdminProfilePanel />;
 
   return (
-    <div className={`profile-grid ${role === "CUSTOMER" ? "profile-wide grid-2" : "profile-single"}`}>
+    <div className={`profile-grid ${role === "CUSTOMER" || role === "COURIER" ? "profile-wide grid-2" : "profile-single"}`}>
       <PersonalDetails />
       {role === "CUSTOMER" && <SavedAddresses />}
+      {role === "COURIER" && <CourierVehicle />}
     </div>
   );
 }

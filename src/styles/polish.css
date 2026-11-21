@@ -1,0 +1,233 @@
+/*
+ * Member 10: app-wide visual polish. Loaded after index.css, so it refines the shared look of every role's
+ * pages (sidebar, top bar, cards, buttons, inputs, tables, badges, notices) without changing any page code.
+ * Navy / orange theme stays the same.
+ */
+:root {
+  --navy: #121828;
+  --navy-2: #1b2438;
+  --orange: #f97316;
+  --orange-dark: #ea580c;
+  --orange-soft: #fff4eb;
+  --ink: #172033;
+  --muted: #5f6779;
+  --line: #d4d9e5;
+  --line-soft: #e8ebf2;
+  --bg: #f5f7fb;
+  --ok: #067647;
+  --err: #b42318;
+  --radius: 14px;
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, .04), 0 1px 3px rgba(16, 24, 40, .06);
+  --shadow-md: 0 4px 12px rgba(16, 24, 40, .08);
+  --ring: 0 0 0 3px rgba(249, 115, 22, .22);
+}
+
+body {
+  font-family: Inter, "Segoe UI", "Noto Sans", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+::selection { background: rgba(249, 115, 22, .22); }
+
+/* ---- Dashboard shell ---------------------------------------------------- */
+body .dash { grid-template-columns: 220px 1fr; background: var(--bg); }
+body .side { background: var(--navy); box-shadow: inset -1px 0 0 rgba(255, 255, 255, .04); }
+body .side-brand { height: 64px; padding: 0 20px; background: transparent; font-size: 22px; font-weight: 800; letter-spacing: -.5px; border-bottom: 1px solid rgba(255, 255, 255, .06); gap: 2px; }
+body .side-brand::after { content: "."; color: var(--orange); }
+body .side-role { display: block; margin: 14px 20px 6px; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #8390a8; }
+body .side nav { padding: 6px 10px 16px; gap: 2px; }
+body .side-link { padding: 10px 12px; border-radius: 10px; border-left: 3px solid transparent; color: #c3cadb; font-size: 14.5px; font-weight: 500; transition: background .15s ease, color .15s ease; }
+body .side-link:hover { background: rgba(255, 255, 255, .06); color: #fff; }
+body .side-link.active { background: rgba(249, 115, 22, .12); color: #fff; border-left-color: var(--orange); font-weight: 600; }
+
+body .topbar { height: 64px; padding: 0 28px; border-bottom: 1px solid var(--line-soft); background: rgba(255, 255, 255, .92); backdrop-filter: saturate(180%) blur(8px); }
+body .topbar h1 { font-size: 19px; font-weight: 700; letter-spacing: -.2px; }
+body .topbar-user { gap: 12px; font-size: 14.5px; color: var(--ink); }
+body .avatar { width: 34px; height: 34px; background: linear-gradient(135deg, var(--orange), var(--orange-dark)); color: #fff; font-weight: 700; }
+body .content { padding: 24px 28px 40px; animation: page-in .18s ease-out; }
+@keyframes page-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .content { animation: none; } }
+
+/* ---- Surfaces ----------------------------------------------------------- */
+body .card, body .admin-panel { border: 1px solid var(--line-soft); border-radius: var(--radius); box-shadow: var(--shadow-sm); }
+body .card { padding: 20px 22px; }
+body .card + .card { margin-top: 16px; }
+body .card h3, body .card-head h3 { font-size: 18px; font-weight: 700; letter-spacing: -.2px; }
+body .stats .stat, body .report-stat { box-shadow: var(--shadow-sm); }
+
+/* Definition lists inside cards (profiles, details) read as label / value pairs */
+body .content .card dl:not([class]) { display: grid; grid-template-columns: max-content 1fr; gap: 10px 24px; margin: 0 0 16px; }
+body .content .card dl:not([class]) dt { color: var(--muted); font-size: 14px; }
+body .content .card dl:not([class]) dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+
+/* ---- Buttons ------------------------------------------------------------ */
+body .btn, body .btn-outline, body .admin-button {
+  border-radius: 10px; border-color: var(--line); font-weight: 600;
+  transition: background .15s ease, border-color .15s ease, box-shadow .15s ease, transform .05s ease;
+}
+body .btn:hover:not(:disabled), body .btn-outline:hover:not(:disabled), body .admin-button:hover:not(:disabled) { border-color: #aab2c4; background: #f8f9fc; }
+body .btn:active:not(:disabled), body .btn-outline:active:not(:disabled), body .admin-button:active:not(:disabled) { transform: translateY(1px); }
+body .btn.primary, body .admin-button.primary { background: var(--orange); border-color: var(--orange); color: #1a1205; box-shadow: 0 1px 2px rgba(234, 88, 12, .25); }
+body .btn.primary:hover:not(:disabled), body .admin-button.primary:hover:not(:disabled) { background: var(--orange-dark); border-color: var(--orange-dark); color: #fff; }
+body .btn.danger { color: var(--err); border-color: #f1c0bc; background: #fff; }
+body .btn.danger:hover:not(:disabled) { background: #fef3f2; border-color: #e8a29c; }
+body .btn:focus-visible, body .btn-outline:focus-visible, body .admin-button:focus-visible { outline: none; box-shadow: var(--ring); border-color: var(--orange); }
+body .btn.inline { height: 42px; padding: 0 18px; }
+body a.btn.inline { line-height: 40px; }
+body .btn-outline { height: 38px; display: inline-flex; align-items: center; }
+
+/* ---- Inputs ------------------------------------------------------------- */
+body .field > span, body .admin-field > span { font-size: 14px; font-weight: 600; color: #344054; }
+body .field input, body .field select, body .field textarea, body .admin-field input, body .admin-field select, body .admin-field textarea {
+  border-color: var(--line); border-radius: 10px; transition: border-color .15s ease, box-shadow .15s ease;
+}
+body .field input, body .field select { height: 44px; }
+body .field input:hover, body .field select:hover, body .admin-field input:hover, body .admin-field select:hover { border-color: #aab2c4; }
+body .field input:focus, body .field select:focus, body .field textarea:focus,
+body .admin-field input:focus, body .admin-field select:focus, body .admin-field textarea:focus { outline: none; border-color: var(--orange); box-shadow: var(--ring); }
+body .field input::placeholder, body .admin-field input::placeholder { color: #98a2b3; }
+
+/* ---- Tables ------------------------------------------------------------- */
+body .table th, body .admin-table th, body .notification-table th {
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #667085;
+  background: #fafbfd; border-bottom: 1px solid var(--line-soft);
+}
+body .table td, body .admin-table td, body .notification-table td { border-bottom-color: #eef1f6; }
+body .table tbody tr, body .admin-table tbody tr { transition: background .12s ease; }
+body .table tbody tr:hover, body .admin-table tbody tr:hover { background: #fbf7f3; }
+body .table th:first-child, body .admin-table th:first-child { border-top-left-radius: 8px; }
+body .table th:last-child, body .admin-table th:last-child { border-top-right-radius: 8px; }
+
+/* ---- Badges, notices, empty states ------------------------------------- */
+body .badge { font-size: 12.5px; padding: 3px 10px; border: 1px solid transparent; }
+body .badge.pending { border-color: #fedf89; }
+body .badge.created, body .badge.picked_up { border-color: #c7d7fe; }
+body .badge.in_transit { border-color: #b9e6fe; }
+body .badge.out_for_delivery { border-color: #e9d7fe; }
+body .badge.delivered, body .badge.approved { border-color: #abefc6; }
+body .badge.cancelled, body .badge.failed, body .badge.rejected { border-color: #fecdca; }
+
+body .notice { border: 1px solid transparent; border-radius: 12px; }
+body .notice.ok { border-color: #abefc6; }
+body .notice.error { border-color: #fecdca; }
+body .hint { color: var(--muted); }
+body .empty { padding: 40px 16px; }
+body .empty strong { font-size: 16px; }
+
+/* ---- Modal -------------------------------------------------------------- */
+body .modal-backdrop { background: rgba(15, 23, 42, .55); backdrop-filter: blur(2px); }
+body .modal { border-radius: 16px; box-shadow: 0 20px 48px rgba(15, 23, 42, .25); padding: 22px 24px; }
+
+/* ---- Auth pages --------------------------------------------------------- */
+body .auth-card h2 { font-weight: 800; letter-spacing: -.5px; }
+body .auth-panel { background: #fff; }
+body .links a { font-weight: 500; }
+
+/* ---- Small screens ------------------------------------------------------ */
+@media (max-width: 800px) {
+  body .dash { grid-template-columns: 1fr; }
+  body .side-brand { height: 56px; border-bottom: 0; }
+  body .side-role { display: none; }
+  body .side nav { padding: 0 10px 10px; }
+  body .side-link { border-left: 0; border-bottom: 3px solid transparent; border-radius: 8px; }
+  body .side-link.active { border-bottom-color: var(--orange); }
+  body .topbar { padding: 0 16px; height: 56px; }
+  body .topbar-user > span:not(.avatar) { display: none; }
+  body .content { padding: 16px; }
+  body .content .card dl:not([class]) { grid-template-columns: 1fr; gap: 2px; }
+  body .content .card dl:not([class]) dd { margin-bottom: 10px; }
+}
+
+/* ---- Bigger, roomier layout (wider sidebar, more spacing, text about +2px) ----
+ * Page styles set their sizes in px, so the content area is scaled with CSS zoom (14px -> 16px, about 1.14x)
+ * instead of editing every page. Maps are zoomed back to 1x so map clicks and pins stay exact.
+ */
+body .dash { grid-template-columns: 260px 1fr; }
+body .side-brand { height: 74px; padding: 0 24px; font-size: 30px; letter-spacing: -.8px; }
+body .side-role { margin: 18px 24px 8px; font-size: 12px; }
+body .side nav { padding: 6px 12px 18px; gap: 6px; }
+body .side-link { padding: 12px 16px; font-size: 16.5px; }
+body .topbar { height: 70px; padding: 0 32px; }
+body .topbar h1 { font-size: 21px; }
+body .topbar-user { font-size: 16.5px; gap: 14px; }
+body .topbar-user .btn-outline { height: 40px; padding: 0 18px; font-size: 15.5px; }
+body .avatar { width: 38px; height: 38px; font-size: 16px; }
+
+/* more room between buttons and form rows */
+body .row, body .notification-actions, body .notification-toolbar, body .admin-form-actions, body .admin-page-actions,
+body .page-head, body .card-head, body .courier-actions, body .dm-row, body .endpoint-actions { gap: 16px; }
+body .modal-foot { gap: 14px; }
+body .field { margin-bottom: 20px; }
+body .admin-form > .admin-field { margin-bottom: 20px; }
+body .admin-form-grid { gap: 20px 24px; }
+
+@media (min-width: 801px) {
+  body .content { zoom: 1.14; padding: 24px 28px 48px; }
+  body .content .leaflet-container { zoom: 0.877; }
+  body .auth-panel, body .dm-main, body .dm-header { zoom: 1.14; }
+}
+@media (max-width: 800px) {
+  body { font-size: 17px; }
+  body .side-link { font-size: 15.5px; }
+}
+
+/* ---- Balanced pages: content blocks with a max width sit in the middle, not stuck to the left ---- */
+body .content > * { margin-left: auto; margin-right: auto; }
+
+/* ---- SwiftDrop AI assistant: larger, easier to read ------------------- */
+body .sd-assistant { right: 28px; bottom: 28px; gap: 14px; }
+body .sd-assistant-toggle { font-size: 16px; padding: 14px 24px; box-shadow: 0 10px 28px rgba(234, 88, 12, .35); }
+body .sd-assistant-panel {
+  width: min(460px, calc(100vw - 32px));
+  height: min(700px, calc(100vh - 130px));
+  border: 1px solid var(--line-soft); border-radius: 20px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, .28);
+}
+body .sd-assistant-head { padding: 18px 20px; background: var(--navy); gap: 12px; }
+body .sd-assistant-head strong { font-size: 18px; font-weight: 700; letter-spacing: -.2px; }
+body .sd-assistant-head strong::before {
+  content: "AI"; display: inline-grid; place-items: center; width: 30px; height: 30px; margin-right: 10px;
+  border-radius: 10px; background: var(--orange); color: #fff; font-size: 12px; font-weight: 800; vertical-align: middle;
+}
+body .sd-assistant-head span { font-size: 13.5px; margin-top: 4px; color: #aeb8cc; }
+body .sd-assistant-head-actions button { padding: 6px 12px; font-size: 14px; border-radius: 10px; }
+body .sd-assistant-list { padding: 20px; gap: 14px; background: #f6f8fc; }
+body .sd-msg { max-width: 88%; padding: 12px 16px; border-radius: 16px; font-size: 15.5px; line-height: 1.55; }
+body .sd-msg-assistant { border-color: var(--line-soft); border-bottom-left-radius: 6px; box-shadow: var(--shadow-sm); }
+body .sd-msg-user { border-bottom-right-radius: 6px; }
+body .sd-assistant-suggestions { gap: 8px; }
+body .sd-assistant-suggestions button { padding: 9px 16px; font-size: 14.5px; transition: background .15s ease; }
+body .sd-assistant-suggestions button:hover { background: #ffedd5; }
+body .sd-assistant-error { font-size: 14.5px; padding: 10px 14px; }
+body .sd-assistant-form { padding: 14px 16px; gap: 10px; }
+body .sd-assistant-form textarea { font-size: 15.5px; padding: 12px 14px; border-radius: 12px; min-height: 52px; }
+body .sd-assistant-form textarea:focus { outline: none; border-color: var(--orange); box-shadow: var(--ring); }
+body .sd-assistant-form button { padding: 0 22px; font-size: 15.5px; border-radius: 12px; }
+body .sd-assistant-note { padding: 0 16px 12px; font-size: 12.5px; }
+@media (max-width: 800px) {
+  body .sd-assistant { right: 12px; bottom: 12px; }
+  body .sd-assistant-panel { height: min(620px, calc(100vh - 100px)); }
+}
+
+/* ---- Profile details (admin account, courier vehicle) ------------------ */
+body .profile-details { display: grid; grid-template-columns: max-content 1fr; gap: 12px 28px; margin: 4px 0 18px; }
+body .profile-details dt { color: var(--muted); font-size: 14px; }
+body .profile-details dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+body .vehicle-summary { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 16px; margin-bottom: 18px; border-radius: 12px; background: var(--navy); color: #fff; }
+body .vehicle-plate { padding: 6px 14px; border-radius: 8px; background: #ffd400; color: #111; font-weight: 800; letter-spacing: .08em; font-size: 18px; border: 2px solid #111; }
+body .vehicle-type { font-size: 17px; font-weight: 600; }
+
+/* ---- Notifications bell in the top bar (replaces the sidebar tab) ------ */
+body .topbar-bell { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--line-soft); color: var(--ink); background: #fff; transition: background .15s ease, border-color .15s ease, color .15s ease; }
+body .topbar-bell:hover { background: var(--orange-soft); border-color: #fed7aa; color: var(--orange-dark); }
+body .topbar-bell.active { background: var(--orange); border-color: var(--orange); color: #fff; }
+body .topbar-bell:focus-visible { outline: none; box-shadow: var(--ring); }
+
+/* ---- Recipient email updates (Create Delivery) ------------------------ */
+body .sd-alert-email { display: grid; gap: 6px; margin: 10px 0 4px; }
+body .sd-alert-email label { font-size: 14px; font-weight: 600; color: #344054; }
+body .sd-alert-email input { height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 10px; font: inherit; background: #fff; color: var(--ink); }
+body .sd-alert-email input:focus { outline: none; border-color: var(--orange); box-shadow: var(--ring); }
+body .sd-alert-email input[aria-invalid="true"] { border-color: #f1c0bc; }
+body .sd-alert-email-hint { color: var(--muted); font-size: 13px; }
+body .sd-alert-email-err { color: var(--err); font-size: 13px; }
