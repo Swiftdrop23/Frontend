@@ -41,10 +41,10 @@ describe("Team frontend and delivery reconciliation", () => {
     expect(screen.getByLabelText("Current password")).toBeVisible();
   });
 
-  it("preserves the merchant-owned profile placeholder", () => {
+  it("renders the merchant business profile page", () => {
     saveSession({ token: "fixture-token", user: { name: "Fixture Merchant", role: "MERCHANT" } });
     render(<MemoryRouter initialEntries={["/merchant/profile"]}><App /></MemoryRouter>);
-    expect(screen.getByText("/merchant/profile")).toBeVisible();
+    expect(screen.queryByText("/merchant/profile")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Full name")).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Orders" })).toHaveAttribute("href", "/merchant/orders");
   });

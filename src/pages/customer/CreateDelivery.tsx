@@ -1,4 +1,4 @@
-﻿import type { DeliveryQuote, DeliveryReceipt, ConfirmationAttempt } from "../../types/delivery";
+import type { DeliveryQuote, DeliveryReceipt, ConfirmationAttempt } from "../../types/delivery";
 import type { FormEvent } from "react";
 import type { FieldChange } from "../../components/Field";
 import { Button, Card } from "../../components/ui";
@@ -217,10 +217,10 @@ export default function CreateDelivery() {
           {reviewing ? (
             <>
               <dl className="delivery-summary">
-                <div className="delivery-route-row"><dt><DeliveryIcon name="route" /> Pickup address</dt><dd>{details.pickupAddress.trim()}{pins.pickup ? " Â· ðŸ“ pinned on map" : ""}</dd></div>
-                <div className="delivery-route-row"><dt><DeliveryIcon name="route" /> Drop-off address</dt><dd>{details.dropoffAddress.trim()}{pins.dropoff ? " Â· ðŸ“ pinned on map" : ""}</dd></div>
+                <div className="delivery-route-row"><dt><DeliveryIcon name="route" /> Pickup address</dt><dd>{details.pickupAddress.trim()}{pins.pickup ? " · 📍 pinned on map" : ""}</dd></div>
+                <div className="delivery-route-row"><dt><DeliveryIcon name="route" /> Drop-off address</dt><dd>{details.dropoffAddress.trim()}{pins.dropoff ? " · 📍 pinned on map" : ""}</dd></div>
                 <div><dt>Parcel weight</dt><dd>{details.weight} kg</dd></div>
-                <div><dt>Parcel size (length Ã— width Ã— height)</dt><dd>{details.length} Ã— {details.width} Ã— {details.height} cm</dd></div>
+                <div><dt>Parcel size (length × width × height)</dt><dd>{details.length} × {details.width} × {details.height} cm</dd></div>
                 <div><dt>Recipient name</dt><dd>{details.recipientName.trim()}</dd></div>
                 <div><dt>Recipient phone</dt><dd>{details.recipientPhone.trim()}</dd></div>
                 <div><dt>Email updates to the recipient</dt><dd>{[alerts.pickedUp && "Picked up", alerts.outForDelivery && "Out for delivery", alerts.delivered && "Delivered"].filter(Boolean).join(", ") || "None"}</dd></div>
