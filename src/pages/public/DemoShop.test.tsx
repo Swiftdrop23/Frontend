@@ -46,6 +46,6 @@ describe("Demo Mart shop (Member 10)", () => {
     await userEvent.type(screen.getByLabelText("Delivery address"), "Kandy");
     await userEvent.click(screen.getByRole("button", { name: "Place order" }));
     expect(screen.getByRole("alert").textContent).toContain("can't take orders");
-    expect(screen.getByRole("note").textContent).toContain("VITE_DEMO_SHOP_CLIENT_ID");
+    expect(screen.getByRole("form", { name: "Connect to SwiftDrop" })).toBeTruthy();
   });
 });

@@ -5,12 +5,14 @@ import "./demoShop.css";
 /*
  * Member 10: "Demo Mart", a pretend online shop that shows the merchant integration end to end.
  * A shopper buys here (not on SwiftDrop); on Place order the shop uses its SwiftDrop API key to create the
- * delivery, exactly as a real shop's server would. Demo only: a real shop keeps its key on its server.
+ * delivery, exactly as a real shop's server would. The shop is connected by pasting the key (Client ID + secret)
+ * into the card at the top; VITE_DEMO_SHOP_CLIENT_ID / _SECRET in .env.local still work as a fallback.
+ * Demo only: the pasted key lives in this page's memory (gone on refresh). A real shop keeps its key on its server.
  */
 
 const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? "/api";
-// The shop owner sets the shop's SwiftDrop key once (like a server setting): VITE_DEMO_SHOP_CLIENT_ID / _SECRET in .env.local.
-const SHOP_KEY = {
+// Optional fallback: a key set once like a server setting (VITE_DEMO_SHOP_CLIENT_ID / _SECRET in .env.local).
+const ENV_KEY = {
   clientId: (import.meta.env.VITE_DEMO_SHOP_CLIENT_ID as string | undefined)?.trim() ?? "",
   clientSecret: (import.meta.env.VITE_DEMO_SHOP_CLIENT_SECRET as string | undefined)?.trim() ?? "",
 };
@@ -54,6 +56,8 @@ function Icon({ name, size = 22 }: { name: string; size?: number }) {
   }
 }
 
+const linkButton = { background: "none", border: 0, padding: 0, marginLeft: 8, font: "inherit", fontWeight: 600, textDecoration: "underline", cursor: "pointer", color: "inherit" } as const;
+
 export default function DemoShop() {
   const [step, setStep] = useState<"shop" | "checkout" | "placed">("shop");
   const [product, setProduct] = useState<Product>(PRODUCTS[0]);
@@ -61,8 +65,34 @@ export default function DemoShop() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [placed, setPlaced] = useState<{ order: string; tracking: string; name: string; email: string } | null>(null);
-  const key = SHOP_KEY;
+  const [key, setKey] = useState(ENV_KEY);
+  const [link, setLink] = useState({ clientId: "", clientSecret: "" });
+  const [linkBusy, setLinkBusy] = useState(false);
+  const [linkError, setLinkError] = useState("");
+  const [showConnect, setShowConnect] = useState(false);
   const connected = Boolean(key.clientId && key.clientSecret);
+
+  const connect = async (event: FormEvent) => {
+    event.preventDefault();
+    const clientId = link.clientId.trim();
+    const clientSecret = link.clientSecret.trim();
+    if (!clientId || !clientSecret) { setLinkError("Enter both the Client ID and the secret."); return; }
+    setLinkBusy(true);
+    setLinkError("");
+    try {
+      // Check the key works before accepting it, exactly like the first call a real shop makes.
+      const auth = await postJson("/v1/merchant/auth/token", { clientId, clientSecret });
+      const token = String(auth.accessToken ?? auth.access_token ?? auth.token ?? "");
+      if (!token) throw new Error("SwiftDrop did not return an access token.");
+      setKey({ clientId, clientSecret });
+      setLink({ clientId: "", clientSecret: "" });
+      setShowConnect(false);
+    } catch (e) {
+      setLinkError(`Could not connect: ${(e as Error).message}`);
+    } finally {
+      setLinkBusy(false);
+    }
+  };
 
   const buy = (p: Product) => {
     setProduct(p);
@@ -110,10 +140,27 @@ export default function DemoShop() {
       </header>
 
       <main className="dm-wrap dm-main">
-        {!connected && (
-          <p className="dm-setup" role="note">
-            This shop isn't connected to SwiftDrop yet. Shop owner: create a key in SwiftDrop → API Keys and add
-            VITE_DEMO_SHOP_CLIENT_ID and VITE_DEMO_SHOP_CLIENT_SECRET to .env.local, then restart the dev server.
+        {(!connected || showConnect) && (
+          <form className="dm-panel" onSubmit={connect} noValidate aria-label="Connect to SwiftDrop" style={{ marginBottom: 20 }}>
+            <h2>Connect this shop to SwiftDrop</h2>
+            <p className="dm-hint">Shop owner: paste the Client ID and secret from your SwiftDrop merchant portal (Connect shop page).</p>
+            <label className="dm-field">Client ID
+              <input value={link.clientId} placeholder="sd_xxxxxxxxxxxxxxxx" autoComplete="off" onChange={(e) => setLink({ ...link, clientId: e.target.value })} />
+            </label>
+            <label className="dm-field">Client secret
+              <input type="password" value={link.clientSecret} placeholder="Paste the secret" autoComplete="off" onChange={(e) => setLink({ ...link, clientSecret: e.target.value })} />
+            </label>
+            {linkError && <p className="dm-error" role="alert">{linkError}</p>}
+            <div className="dm-row">
+              <button type="submit" className="dm-btn" disabled={linkBusy}>{linkBusy ? "Connecting…" : "Connect to SwiftDrop"}</button>
+              {connected && <button type="button" className="dm-btn ghost" onClick={() => { setShowConnect(false); setLinkError(""); }}>Cancel</button>}
+            </div>
+          </form>
+        )}
+        {connected && !showConnect && (
+          <p className="dm-hint" role="status" style={{ marginBottom: 16 }}>
+            Connected to SwiftDrop as <code>{key.clientId}</code>
+            <button type="button" style={linkButton} onClick={() => setShowConnect(true)}>Change connection</button>
           </p>
         )}
         {step === "shop" && (
